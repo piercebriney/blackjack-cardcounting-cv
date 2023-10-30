@@ -1,0 +1,7 @@
+To build the docker image:
+`docker build -t blackjack .`
+
+To run the program in simulation mode (not on raspberry pi):
+`docker run -e SIM_MODE=true -it blackjack`
+To run the program on the pi:
+`docker run -e SIM_MODE=false --privileged blackjack`
