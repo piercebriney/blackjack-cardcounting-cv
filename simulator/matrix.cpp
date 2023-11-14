@@ -4,8 +4,8 @@
 
 using namespace std;
 
-// print field
-#define PRINT(a)                              \
+// print value
+#define PRINT(a)                          \
 {                                         \
   std::cout << #a << ": " << (a) << endl; \
 }
