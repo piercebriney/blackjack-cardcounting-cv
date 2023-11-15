@@ -44,3 +44,7 @@ cardName shoe::drawCard() {
   contents.pop_back();
   return ret;
 }
+
+int shoe::getCardsLeftInShoe() {
+  return contents.size();
+}

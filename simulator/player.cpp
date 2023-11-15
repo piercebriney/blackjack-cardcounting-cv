@@ -2,12 +2,11 @@
 
 using namespace std;
 
-void player::seeCard() {
-  switch(hisCountingMethod) {
-    case HiLo:
-
-      break;
-  }
+void player::seeCard(cardName a) {
+  cardsCounted++;
+  vector<int>* thisCountingMethod;
+  thisCountingMethod = &g_countingMethods[hisCountingMethod];
+  runningCount += thisCountingMethod->at(getEffectiveCard(a));
 }
 
 float player::getBankroll() {
@@ -18,21 +17,13 @@ void player::setCountingMethod(countingMethod a) {
   hisCountingMethod = a;
 }
 
-void seeCard() {
-  cardsCounted++;
-}
-
-void resetCount() {
+void player::resetCount() {
   runningCount = 0;
   cardsCounted = 0;
-  trueCount = 0;
 }
 
 //if the player doesn't have an advantage, do the minimum bet
-int getBet() {
-  if(bankroll < G_MINIMUM_BET) {
-    return -1; //kicked out!
-  }
+int player::getBet() {
   float playerAdvantge;
   float trueCount;
 
@@ -47,7 +38,7 @@ int getBet() {
   if(trueCount <= 1) {
     return G_MINIMUM_BET;
   } else {
-    playerAdvantage = (trueCount - 1)/200; //playeradvantage increases by 0.5% for every trueCount
+    float playerAdvantage = (trueCount - 1)/200; //playeradvantage increases by 0.5% for every trueCount
     //if the player has an advantage, bet the advantage percentage of the bankroll (kelly criterion)
     float ret = playerAdvantage * bankroll;
     if(ret < G_MINIMUM_BET) {ret = G_MINIMUM_BET;}
@@ -56,7 +47,14 @@ int getBet() {
   }
 }
 
-//player action is a function of the dealer's faceup card, the cards they were dealt, and the true count
-action getAction() {
+//perfect basic strategy reduces casino edge to merely 0.5%
+action player::getBasicStrategyAction(gamestate a) {
   
+}
+
+//player action is a function of the dealer's faceup card, the cards they were dealt, and the true count
+action player::getAction(gamestate a) {
+  //actions are derived by checking for deviations to basic strategy
+  //and then applying basicStrategy
+
 }
