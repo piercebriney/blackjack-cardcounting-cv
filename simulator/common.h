@@ -17,6 +17,8 @@ enum cardName {_2S,_3S,_4S,_5S,_6S,_7S,_8S,_9S,_10S,_JS,_QS,_KS,_AS,
 
 enum effectiveCard {_A, _2, _3, _4, _5, _6, _7, _8, _9, _10};
 
+enum action {hit, stay, split, doubledown, surrender, quit};
+
 extern std::vector<std::vector<int>>g_countingMethods;
 
 enum countingMethod {HiLo, HiOpt2};
