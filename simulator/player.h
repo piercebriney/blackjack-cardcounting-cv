@@ -16,10 +16,11 @@ class player {
 
 public:
   
-  void seeCard();
+  void seeCard(cardName a);
   void resetCount();
   int getBet();
-  action getAction(); //hitting/staying
+  action getBasicStrategyAction(gamestate a);
+  action getAction(gamestate a); //hitting/staying
   float getBankroll();
   void setCountingMethod(countingMethod a);
 
