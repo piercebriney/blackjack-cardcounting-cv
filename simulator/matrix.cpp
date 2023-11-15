@@ -4,11 +4,6 @@
 
 using namespace std;
 
-// print value
-#define PRINT(a)                          \
-{                                         \
-  std::cout << #a << ": " << (a) << endl; \
-}
 
 string getName(cardName it) {
   switch (it) {
@@ -120,6 +115,7 @@ string getName(cardName it) {
     case _AD:
       return "AD";
   }
+  return "ER";
 }
 
 vector<string> splitString(string s, char delimiter)
@@ -289,6 +285,15 @@ int c_matrix::comprehensiveTest() {
     cout << "Comprehensive test succeeded." << endl;
   }
   return res;
+}
 
-
+void c_matrix::perfectify(float a) {
+  if(a < 0 || a > 1) {return;}
+  for(int i = 0; i < 52; i++) {
+    for(int j = 0; j < 52; j++) {
+      float idealValue = 0;
+      if(i == j) { idealValue = 1;}
+      weights[i][j] = (weights[i][j] * (1-a)) + idealValue * a;
+    }
+  }
 }
