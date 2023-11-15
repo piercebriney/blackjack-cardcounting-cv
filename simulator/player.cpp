@@ -3,9 +3,17 @@
 using namespace std;
 
 void player::seeCard() {
-  switch(hisStrategy) {
-    case hilo:
+  switch(hisCountingMethod) {
+    case HiLo:
 
       break;
   }
+}
+
+float player::getBankroll() {
+  return bankroll;
+}
+
+void player::setCountingMethod(countingMethod a) {
+  hisCountingMethod = a;
 }
