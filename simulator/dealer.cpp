@@ -40,11 +40,6 @@ int dealer::playRound(player p) {
     playerAction = p.getAction(g);
   }
 
-
-
-
-
-
   p.seeCard(d);
 
   //if the player doesn't have enough money to keep playing, kick them out
