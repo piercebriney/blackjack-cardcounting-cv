@@ -50,11 +50,12 @@ int player::getBet() {
 //perfect basic strategy reduces casino edge to merely 0.5%
 action player::getBasicStrategyAction(gamestate a) {
   
+  return hit;
 }
 
 //player action is a function of the dealer's faceup card, the cards they were dealt, and the true count
 action player::getAction(gamestate a) {
   //actions are derived by checking for deviations to basic strategy
   //and then applying basicStrategy
-
+  return hit;
 }

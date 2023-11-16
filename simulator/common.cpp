@@ -1,4 +1,5 @@
 #include "common.h"
+#include <stdexcept>
 
 using namespace std;
 
@@ -124,6 +125,59 @@ string getCardName(cardName a) {
       return "AD";
   }
   return "ER";
+}
+
+string getEffectiveCardName(effectiveCard a) {
+  switch (a) {
+    case _A:
+      return "A";
+    case _2:
+      return "2";
+    case _3:
+      return "3";
+    case _4:
+      return "4";
+    case _5:
+      return "5";
+    case _6:
+      return "6";
+    case _7:
+      return "7";
+    case _8:
+      return "8";
+    case _9:
+      return "9";
+    case _10:
+      return "10";
+  }
+  return "ER";
+}
+
+int getEffectiveCardValue(effectiveCard a) {
+  switch (a) {
+    case _A:
+      //careful
+      return 1;
+    case _2:
+      return 2;
+    case _3:
+      return 3;
+    case _4:
+      return 4;
+    case _5:
+      return 5;
+    case _6:
+      return 6;
+    case _7:
+      return 7;
+    case _8:
+      return 8;
+    case _9:
+      return 9;
+    case _10:
+      return 10;
+  }
+  return -0;
 }
 
 float getCountFromCard(cardName a, countingMethod b) {

@@ -31,6 +31,10 @@ float getCountFromCard(cardName a, countingMethod b);
 
 effectiveCard getEffectiveCard(cardName a);
 
+std::string getEffectiveCardName(effectiveCard a);
+
+int getEffectiveCardValue(effectiveCard a);
+
 struct gamestate {
   std::vector<cardName> playersCards;
   std::vector<cardName> dealersCards; //player can only see dealersCards[0]
