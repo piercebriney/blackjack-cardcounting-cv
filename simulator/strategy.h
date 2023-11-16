@@ -7,6 +7,9 @@
 typedef std::vector<std::vector<std::string>> table;
 
 extern table g_hardTotalsTable;
+extern table g_softTotalsTable;
+extern table g_pairSplittingTable;
+extern table g_lateSurrenderTable;
 
 std::string lookup(table table, std::string column, std::string row);
 

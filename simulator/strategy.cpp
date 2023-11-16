@@ -9,6 +9,8 @@ using namespace std;
 
 table g_hardTotalsTable;
 table g_softTotalsTable;
+table g_pairSplittingTable;
+table g_lateSurrenderTable;
 
 string lookup(table table, string column, string row) {
   
@@ -65,17 +67,17 @@ action getSoftTotalsAction(gamestate g) {
   if(g.playersCards.size() > 2) {
     throw std::invalid_argument("getSoftTotalsAction() called but player has more than two cards.");
   }
-  if(getEffectiveCardName(g.playersCards[0]) == "A") {
+  if(getEffectiveCardName(getEffectiveCard(g.playersCards[0])) == "A") {
     nonAce = g.playersCards[1];
-  } else if(getEffectiveCardName(g.playersCards[1]) == "A") {
+  } else if(getEffectiveCardName(getEffectiveCard(g.playersCards[1])) == "A") {
     nonAce = g.playersCards[0];
   }
   if(nonAce == _AD) {
     throw std::invalid_argument("getSoftTotalsAction() called but player doesn't have an ace.");
   }
 
-  string column = to_string(getEffectiveCardName(nonAce));
-  string row = to_string(getEffectiveCardName(g.dealersCards[0]);
+  string column = getEffectiveCardName(getEffectiveCard(nonAce));
+  string row = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
   string result = lookup(g_softTotalsTable, column, row);
 
   //!!! add functionality for doubling down
@@ -88,10 +90,10 @@ action getSoftTotalsAction(gamestate g) {
 
 bool shouldPlayerSplit(gamestate g) {
   if(g.playersCards[0] != g.playersCards[1]) {
-    throw std:invalid_argument("getSplitAction() called but player's cards aren't the same.");
+    throw std::invalid_argument("getSplitAction() called but player's cards aren't the same.");
   }
-  string column = to_string(getEffectiveCardName(g.playersCards[0]));
-  string row = to_string(getEffectiveCardName(g.dealersCards[0]);
+  string column = getEffectiveCardName(getEffectiveCard(g.playersCards[0]));
+  string row = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
   string result = lookup(g_pairSplittingTable, column, row);
   if(result == "Y") {
     return 1;
@@ -165,7 +167,7 @@ void loadStrategy() {
     {"4" , "N" , "N" , "N" , "Yn", "Yn", "N" , "N" , "N" , "N" , "N" },
     {"3" , "Yn", "Yn", "Y" , "Y" , "Y" , "Y" , "N" , "N" , "N" , "N" },
     {"2" , "Yn", "Yn", "Y" , "Y" , "Y" , "Y" , "N" , "N" , "N" , "N" },
-  }
+  };
 
   //Cells in the first row represent the dealer's faceup card
   //Cells in the first column represent the sum of the values of the player's cards
@@ -176,6 +178,6 @@ void loadStrategy() {
     {"16", "N", "N" , "N" , "N" , "N" , "N" , "N" , "Y" , "Y" , "Y" },
     {"15", "N", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "Y" , "N" },
     {"14", "N", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" },
-  }
+  };
 
 }
