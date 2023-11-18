@@ -45,7 +45,7 @@ struct gamestate {
   std::vector<card> dealersCards; //player can only see dealersCards[0]
 };
 
-void printPlayerCards(gamestate g);
+void printPlayerCards(gamestate g, int stackIndex);
 
 bool isBlackjack(card a, card b);
 

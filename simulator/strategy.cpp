@@ -89,9 +89,8 @@ action getSoftTotalsAction(gamestate g, int stackIndex) {
   string column = to_string(nonAceTotal);
   string row = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
   string result = lookup(g_softTotalsTable, column, row);
-
   //!!! add functionality for doubling down
-  if(result == "S" || "Ds") {
+  if(result == "S" || result == "Ds") {
     return stay;
   } else {
     return hit;
@@ -116,6 +115,19 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
   } else {
     return 0;
   }
+}
+
+bool shouldPlayerHardTotal(gamestate g, int stackIndex){
+  bool shouldHardTotal = true;
+  if(g.stacks[stackIndex].size() > 2){
+    return true;
+  }
+  for(int i = 0; i < g.stacks[stackIndex].size(); i++) {
+    if(getEffectiveCard(g.stacks[stackIndex][i]) == _A) {
+      shouldHardTotal = false;
+    }
+  }
+  return shouldHardTotal;
 }
 
 bool shouldPlayerSurrender(gamestate g, int stackIndex) {

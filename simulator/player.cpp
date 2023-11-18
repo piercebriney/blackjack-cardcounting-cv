@@ -73,7 +73,17 @@ action player::getBasicStrategyAction(gamestate a) {
 action player::getAction(gamestate g, int stackIndex) {
   //actions are derived by checking for deviations to basic strategy
   //and then applying basicStrategy
-  
+  if(shouldPlayerSurrender(g, stackIndex)){
+    return surrender;
+  }else if(g.stacks[stackIndex][0] == g.stacks[stackIndex][1] && shouldPlayerSplit(g, stackIndex)){
+    return split;
+  }else{
+    if(shouldPlayerHardTotal(g, stackIndex)){
+      return getHardTotalsAction(g, stackIndex);
+    }else{
+      return getSoftTotalsAction(g, stackIndex);
+    }
+  }
   return getHardTotalsAction(g, 0);
 }
 

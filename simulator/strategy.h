@@ -19,4 +19,10 @@ action getHardTotalsAction(gamestate g, int stackIndex);
 
 action getSoftTotalsAction(gamestate g, int stackIndex);
 
+bool shouldPlayerSurrender(gamestate g, int stackIndex);
+
+bool shouldPlayerSplit(gamestate g, int stackIndex);
+
+bool shouldPlayerHardTotal(gamestate g, int stackIndex);
+
 #endif
