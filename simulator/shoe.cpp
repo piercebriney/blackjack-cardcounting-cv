@@ -48,3 +48,7 @@ cardName shoe::drawCard() {
 int shoe::getCardsLeftInShoe() {
   return contents.size();
 }
+
+vector<cardName> shoe::getShoe(){
+  return this->contents;
+}

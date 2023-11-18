@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include "strategy.h"
+#include "dealer.h"
 using namespace std;
 
 
@@ -28,15 +29,19 @@ int main() {
   
   myMatrix.perfectify(1);
 
+  //Creates Player object and sets counting method to HiOpt2
   player joseph;
-
   joseph.setCountingMethod(HiOpt2);
   
+  //Creates shoe, fills shoe with cards, and shuffles deck
   shoe myShoe;
-
   myShoe.reset();
 
-  //PRINT(lookup(g_hardTotalsTable, "2", "14"));
+
+  //Creates dealer object and set the shoe to the one made previously
+  dealer myDealer;
+  myDealer.setShoe(myShoe);
+  PRINT(lookup(g_hardTotalsTable, "2", "14"));
 
   gamestate imaginaryGamestate;
   imaginaryGamestate.playersCards.push_back(_4S);
@@ -49,5 +54,9 @@ int main() {
   } else {
     printf("Action is stay");
   }
-
+  //TODO: Finish mainp playing logic
+  for(int i = 0; i < 1; i++){
+    cout << "Player's current Bankroll is: " << joseph.getBankroll() << endl;
+    myDealer.playRound(joseph);
+  }
 }

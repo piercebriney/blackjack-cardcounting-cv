@@ -1,6 +1,11 @@
 #include "player.h"
+#include "strategy.h"
 
 using namespace std;
+
+player::player(){
+
+}
 
 void player::seeCard(cardName a) {
   cardsCounted++;
@@ -57,5 +62,5 @@ action player::getBasicStrategyAction(gamestate a) {
 action player::getAction(gamestate a) {
   //actions are derived by checking for deviations to basic strategy
   //and then applying basicStrategy
-  return hit;
+  return getHardTotalsAction(a);
 }

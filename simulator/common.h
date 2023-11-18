@@ -40,4 +40,6 @@ struct gamestate {
   std::vector<cardName> dealersCards; //player can only see dealersCards[0]
 };
 
+void printPlayerCards(gamestate g);
+
 #endif

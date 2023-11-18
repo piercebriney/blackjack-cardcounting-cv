@@ -15,6 +15,7 @@ public:
   cardName drawCard();
   void printContents();
   void testBalancedCounting(); //balanced countingmethods will return 0 after counting a full deck
+  std::vector<cardName> getShoe();
 };
 
 #endif
