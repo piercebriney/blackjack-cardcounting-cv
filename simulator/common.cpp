@@ -208,8 +208,8 @@ effectiveCard getEffectiveCard(card a) {
   return ret;
 }
 
-void printPlayerCards(gamestate g){
-  for(card n : g.stacks[0]){
+void printPlayerCards(gamestate g, int stackIndex){
+  for(card n : g.stacks[stackIndex]){
     cout << getCardName(n) << " ";
   }
   cout << endl;

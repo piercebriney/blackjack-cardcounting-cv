@@ -18,7 +18,7 @@ int main() {
   commonInit();
   loadStrategy();
 
-  printf("What matrix will be loaded?\n>");
+  /*printf("What matrix will be loaded?\n>");
   
   string input;
   cin >> input;
@@ -27,7 +27,7 @@ int main() {
 
   c_matrix myMatrix = c_matrix(fileaddress);
   
-  myMatrix.perfectify(1);
+  myMatrix.perfectify(1);*/
 
   //Creates Player object and sets counting method to HiOpt2
   player joseph;
@@ -41,7 +41,7 @@ int main() {
   //Creates dealer object and set the shoe to the one made previously
   dealer myDealer;
   myDealer.setShoe(myShoe);
-  PRINT(lookup(g_hardTotalsTable, "2", "14"));
+  /*PRINT(lookup(g_hardTotalsTable, "2", "14"));
 
   gamestate imaginaryGamestate;
   imaginaryGamestate.stacks[0].push_back(_4S);
@@ -53,7 +53,7 @@ int main() {
     printf("Action is hit");
   } else {
     printf("Action is stay");
-  }
+  }*/
 
   //!!! Finish main playing logic
   for(int i = 0; i < G_NUM_ROUNDS; i++){
