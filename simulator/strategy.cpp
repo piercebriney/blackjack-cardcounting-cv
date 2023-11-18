@@ -41,14 +41,18 @@ string lookup(table table, string column, string row) {
   return table[rowIndex][columnIndex];
 }
 
-action getHardTotalsAction(gamestate g) {
+action getHardTotalsAction(gamestate g, int stackIndex) {
   loadStrategy();
   int playerSum = 0;
-  for(auto n : g.playersCards) {
-    playerSum+=getEffectiveCardValue(getEffectiveCard(n));
+  for(auto c : g.stacks[stackIndex]) {
+    playerSum+=getEffectiveCardValue(getEffectiveCard(c));
   }
 
-  cardName dealerCard;
+  if(playerSum < 8) {
+    return hit;
+  }
+
+  card dealerCard;
   dealerCard = g.dealersCards[0];
 
   string column, row;
@@ -64,21 +68,25 @@ action getHardTotalsAction(gamestate g) {
   }
 }
 
-action getSoftTotalsAction(gamestate g) {
-  cardName nonAce = _AD;
-  if(g.playersCards.size() > 2) {
-    throw std::invalid_argument("getSoftTotalsAction() called but player has more than two cards.");
-  }
-  if(getEffectiveCardName(getEffectiveCard(g.playersCards[0])) == "A") {
-    nonAce = g.playersCards[1];
-  } else if(getEffectiveCardName(getEffectiveCard(g.playersCards[1])) == "A") {
-    nonAce = g.playersCards[0];
-  }
-  if(nonAce == _AD) {
-    throw std::invalid_argument("getSoftTotalsAction() called but player doesn't have an ace.");
+action getSoftTotalsAction(gamestate g, int stackIndex) {
+
+  int nonAceTotal = 0;
+  //get total of all cards which aren't aces
+  for(int i = 0; i < g.stacks[stackIndex].size(); i++) {
+    if(getEffectiveCard(g.stacks[stackIndex][i]) != _A) {
+      nonAceTotal += getEffectiveCardValue(g.stacks[stackIndex][i]);
+    }
   }
 
-  string column = getEffectiveCardName(getEffectiveCard(nonAce));
+  if(nonAceTotal == 0) {
+    throw std::invalid_argument("getSoftTotalsAction() called but player has no non-ace cards.");
+  }
+
+  if(nonAceTotal > 9) {
+    return stay;
+  }
+
+  string column = to_string(nonAceTotal);
   string row = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
   string result = lookup(g_softTotalsTable, column, row);
 
@@ -90,11 +98,17 @@ action getSoftTotalsAction(gamestate g) {
   }
 }
 
-bool shouldPlayerSplit(gamestate g) {
-  if(g.playersCards[0] != g.playersCards[1]) {
-    throw std::invalid_argument("getSplitAction() called but player's cards aren't the same.");
+bool shouldPlayerSplit(gamestate g, int stackIndex) {
+  if(g.stacks[stackIndex].size() != 2) {
+    throw std::invalid_argument("getSplitAction() called but the stack doesn't have exactly two cards.");
   }
-  string column = getEffectiveCardName(getEffectiveCard(g.playersCards[0]));
+
+  //you can split a king and a ten, or a queen and a king
+  if(getEffectiveCardValue(g.stacks[stackIndex][0]) != getEffectiveCardValue(g.stacks[stackIndex][1])) {
+    throw std::invalid_argument("getSplitAction() called but the stack's cards aren't identical");
+  }
+
+  string column = getEffectiveCardName(getEffectiveCard(g.stacks[stackIndex][0]));
   string row = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
   string result = lookup(g_pairSplittingTable, column, row);
   if(result == "Y") {
@@ -104,16 +118,24 @@ bool shouldPlayerSplit(gamestate g) {
   }
 }
 
-bool shouldPlayerSurrender(gamestate g) {
+bool shouldPlayerSurrender(gamestate g, int stackIndex) {
   int playerSum = 0;
-  for(auto n : g.playersCards) {
+  for(auto n : g.stacks[stackIndex]) {
     playerSum+=getEffectiveCardValue(getEffectiveCard(n));
   }
 
-  cardName dealerCard;
+  card dealerCard;
   dealerCard = g.dealersCards[0];
-  return true;
-  
+
+  if(playerSum > 16 || playerSum < 14) {
+    return false;
+  }
+
+  string row = to_string(playerSum);
+  string column = getEffectiveCardName(getEffectiveCard(dealerCard));
+
+  string result = lookup(g_hardTotalsTable, column, row);
+  if(result == "Y") {return true;} else {return false;}
 }
 
 void loadStrategy() {
@@ -123,7 +145,7 @@ void loadStrategy() {
   //The other cells indicate S for stay, H for hit, and D for double if possible, and otherwise hit
   g_hardTotalsTable = 
   {
-    {""  , "2", "3", "4", "5", "6", "7", "8", "9", "10", "A"},
+    {""  , "2", "3", "4", "5", "6", "7", "8", "9", "T", "A"},
     {"21", "S", "S", "S", "S", "S", "S", "S", "S", "S", "S"},
     {"20", "S", "S", "S", "S", "S", "S", "S", "S", "S", "S"},
     {"19", "S", "S", "S", "S", "S", "S", "S", "S", "S", "S"},
@@ -138,10 +160,6 @@ void loadStrategy() {
     {"10", "D", "D", "D", "D", "D", "D", "D", "D", "H", "H"},
     {"9" , "H", "D", "D", "D", "D", "H", "H", "H", "H", "H"},
     {"8" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
-    {"7" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
-    {"6" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
-    {"5" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
-    {"4" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
   };
 
   //Cells in the first row represent the dealer's faceup card
@@ -150,7 +168,7 @@ void loadStrategy() {
   //and D for double or hit
   g_softTotalsTable = 
   {
-    {""  , "2", "3" , "4" , "5" , "6" , "7" , "8" , "9" , "10", "A" },
+    {""  , "2", "3" , "4" , "5" , "6" , "7" , "8" , "9" , "T", "A" },
     {"9", "S" , "S" , "S" , "S" , "S" , "S" , "S" , "S" , "S" , "S" },
     {"8", "S" , "S" , "S" , "S" , "Ds", "S" , "S" , "S" , "S" , "S" },
     {"7", "Ds", "Ds", "Ds", "Ds", "Ds", "S" , "S" , "H" , "H" , "H" },
@@ -167,7 +185,7 @@ void loadStrategy() {
   //Yn for "yes, split if you can double after"
   g_pairSplittingTable =
   {
-    {""  , "2", "3" , "4" , "5" , "6" , "7" , "8" , "9" , "10", "A" },
+    {""  , "2", "3" , "4" , "5" , "6" , "7" , "8" , "9" , "T", "A" },
     {"A" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" },
     {"10", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" },
     {"9" , "Y" , "Y" , "Y" , "Y" , "Y" , "N" , "Y" , "Y" , "N" , "N" },
@@ -185,7 +203,7 @@ void loadStrategy() {
   //the other cells indicate Y for "yes, surrender" or N for "No, don't surrender"
   g_lateSurrenderTable = 
   {
-    {""  , "2", "3" , "4" , "5" , "6" , "7" , "8" , "9" , "10", "A" },
+    {""  , "2", "3" , "4" , "5" , "6" , "7" , "8" , "9" , "T", "A" },
     {"16", "N", "N" , "N" , "N" , "N" , "N" , "N" , "Y" , "Y" , "Y" },
     {"15", "N", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "Y" , "N" },
     {"14", "N", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" },

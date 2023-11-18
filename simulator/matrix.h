@@ -23,7 +23,7 @@ public:
 
   int verify();
 
-  void setPerception(cardName real, cardName perceived, float chance);
+  void setPerception(card real, card perceived, float chance);
 
   //interpolate between this matrix and the identity matrix
   //with a == 1, it returns the identity matrix
@@ -31,21 +31,21 @@ public:
   
 
   // USAGE
-  float getPerception(cardName real, cardName perceived);
+  float getPerception(card real, card perceived);
   
   //given a real card, return the perception
-  cardName perceive(cardName real);
+  card perceive(card real);
 
 
   
   // TESTING
   void printWeights();
 
-  void printWeight(cardName real, cardName perceived);
+  void printWeight(card real, card perceived);
 
   void matrixTest();
 
-  int perceptionTest(cardName real);
+  int perceptionTest(card real);
 
   int comprehensiveTest();
 

@@ -14,15 +14,20 @@ class player {
   float bankroll = G_STARTING_BANKROLL;
   countingMethod hisCountingMethod = HiOpt2;
 
+  c_matrix hisConfusionMatrix;
+
 public:
   player();
-  void seeCard(cardName a);
+  void seeCard(card a);
   void resetCount();
   int getBet();
   action getBasicStrategyAction(gamestate a);
-  action getAction(gamestate a); //hitting/staying
+  action getAction(gamestate g, int stackIndex); //for a stack in a gamestate, will he hit, stay, surrender, etc.
   float getBankroll();
+  void getMoney(float a);
+  void loseMoney(float a);
   void setCountingMethod(countingMethod a);
+  void setConfusionMatrix(c_matrix a);
   
 
 };

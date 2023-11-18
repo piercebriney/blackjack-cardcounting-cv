@@ -44,18 +44,19 @@ int main() {
   PRINT(lookup(g_hardTotalsTable, "2", "14"));
 
   gamestate imaginaryGamestate;
-  imaginaryGamestate.playersCards.push_back(_4S);
-  imaginaryGamestate.playersCards.push_back(_9S);
+  imaginaryGamestate.stacks[0].push_back(_4S);
+  imaginaryGamestate.stacks[0].push_back(_9S);
   imaginaryGamestate.dealersCards.push_back(_AH);
 
-  action whatToDo = getHardTotalsAction(imaginaryGamestate);
+  action whatToDo = getHardTotalsAction(imaginaryGamestate, 0);
   if(whatToDo == hit) {
     printf("Action is hit");
   } else {
     printf("Action is stay");
   }
-  //TODO: Finish mainp playing logic
-  for(int i = 0; i < 1; i++){
+
+  //!!! Finish main playing logic
+  for(int i = 0; i < G_NUM_ROUNDS; i++){
     cout << "Player's current Bankroll is: " << joseph.getBankroll() << endl;
     myDealer.playRound(joseph);
   }
