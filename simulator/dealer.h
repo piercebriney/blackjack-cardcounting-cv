@@ -8,8 +8,13 @@
 
 //a class meant to represent a dealer, who uses a shoe to deal cards to herself and a player, and collects and pays money
 class dealer {
-  shoe herShoe;
-  int playRound(player a);
+  private:
+    shoe herShoe;
+  public:
+    dealer();
+    dealer(shoe myShoe);
+    int playRound(player a);
+    void setShoe(shoe myShoe);
 };
 
 #endif

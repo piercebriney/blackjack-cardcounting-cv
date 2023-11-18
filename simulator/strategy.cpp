@@ -15,6 +15,7 @@ table g_lateSurrenderTable;
 string lookup(table table, string column, string row) {
   
   int rowIndex = -1; int columnIndex = -1;
+
   for(int i = 0; i < table.size(); i++) {
     if(table[i][0] == row) {
       rowIndex = i;
@@ -22,7 +23,7 @@ string lookup(table table, string column, string row) {
     }
   }
   if(rowIndex == -1) {
-    cout << "Lookup-error with nonexistant row " << row << " and column " << column << endl;
+   cout << "Lookup-error with nonexistant row " << row << " and column " << column << endl;
     return "error";
   }
 
@@ -41,7 +42,7 @@ string lookup(table table, string column, string row) {
 }
 
 action getHardTotalsAction(gamestate g) {
-
+  loadStrategy();
   int playerSum = 0;
   for(auto n : g.playersCards) {
     playerSum+=getEffectiveCardValue(getEffectiveCard(n));
@@ -51,6 +52,7 @@ action getHardTotalsAction(gamestate g) {
   dealerCard = g.dealersCards[0];
 
   string column, row;
+  
   row = to_string(playerSum);
   column = getEffectiveCardName(getEffectiveCard(dealerCard));
   //!!! add functionality for doubling down
@@ -110,6 +112,7 @@ bool shouldPlayerSurrender(gamestate g) {
 
   cardName dealerCard;
   dealerCard = g.dealersCards[0];
+  return true;
   
 }
 
@@ -121,6 +124,10 @@ void loadStrategy() {
   g_hardTotalsTable = 
   {
     {""  , "2", "3", "4", "5", "6", "7", "8", "9", "10", "A"},
+    {"21", "S", "S", "S", "S", "S", "S", "S", "S", "S", "S"},
+    {"20", "S", "S", "S", "S", "S", "S", "S", "S", "S", "S"},
+    {"19", "S", "S", "S", "S", "S", "S", "S", "S", "S", "S"},
+    {"18", "S", "S", "S", "S", "S", "S", "S", "S", "S", "S"},
     {"17", "S", "S", "S", "S", "S", "S", "S", "S", "S", "S"},
     {"16", "S", "S", "S", "S", "S", "H", "H", "H", "H", "H"},
     {"15", "S", "S", "S", "S", "S", "H", "H", "H", "H", "H"},
@@ -131,6 +138,10 @@ void loadStrategy() {
     {"10", "D", "D", "D", "D", "D", "D", "D", "D", "H", "H"},
     {"9" , "H", "D", "D", "D", "D", "H", "H", "H", "H", "H"},
     {"8" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
+    {"7" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
+    {"6" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
+    {"5" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
+    {"4" , "H", "H", "H", "H", "H", "H", "H", "H", "H", "H"},
   };
 
   //Cells in the first row represent the dealer's faceup card

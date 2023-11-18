@@ -15,7 +15,7 @@ class player {
   countingMethod hisCountingMethod = HiOpt2;
 
 public:
-  
+  player();
   void seeCard(cardName a);
   void resetCount();
   int getBet();
@@ -23,6 +23,7 @@ public:
   action getAction(gamestate a); //hitting/staying
   float getBankroll();
   void setCountingMethod(countingMethod a);
+  
 
 };
 

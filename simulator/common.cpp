@@ -1,5 +1,6 @@
 #include "common.h"
 #include <stdexcept>
+#include <iostream>
 
 using namespace std;
 
@@ -199,3 +200,9 @@ effectiveCard getEffectiveCard(cardName a) {
   return ret;
 }
 
+void printPlayerCards(gamestate g){
+  for(cardName n : g.playersCards){
+    cout << getCardName(n) << " ";
+  }
+  cout << endl;
+}
