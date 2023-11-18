@@ -27,11 +27,11 @@ vector<string> splitString(string s, char delimiter)
 }
 
 
-void c_matrix::setPerception(cardName real, cardName perceived, float chance) {
+void c_matrix::setPerception(card real, card perceived, float chance) {
   weights[real][perceived] = chance;
 }
 
-float c_matrix::getPerception(cardName real, cardName perceived) {
+float c_matrix::getPerception(card real, card perceived) {
   return weights[real][perceived];
 }
 
@@ -83,7 +83,7 @@ c_matrix::c_matrix(string fileaddress) {
     //for each line in input...
     vector<string> x = splitString(line, ',');
     for(int j = 0; j < 52; j++) {
-      setPerception((cardName)i, (cardName)j, stof(x[j+1]));
+      setPerception((card)i, (card)j, stof(x[j+1]));
     }
     i++;
   }
@@ -94,18 +94,18 @@ c_matrix::c_matrix(string fileaddress) {
   cout << "Confusion matrix loaded successfully" << endl;
 }
 
-cardName c_matrix::perceive(cardName real) {
+card c_matrix::perceive(card real) {
   float randomness = ( (double) rand() / RAND_MAX );
   float sumOfOdds = 0;
   //cout << "Randomness is " << randomness << endl;
 
   for(int i = 0; i < 52; i++) {
     if(sumOfOdds >= randomness) {
-      return (cardName)(i-1);
+      return (card)(i-1);
     }
-    sumOfOdds += getPerception(real, (cardName)(i));
+    sumOfOdds += getPerception(real, (card)(i));
   }
-  return (cardName)51;
+  return (card)51;
 }
 
 
@@ -118,7 +118,7 @@ void c_matrix::printWeights() {
   }
 }
 
-void c_matrix::printWeight(cardName real, cardName perceived) {
+void c_matrix::printWeight(card real, card perceived) {
   cout << weights[real][perceived] << endl;
 }
 
@@ -133,7 +133,7 @@ void c_matrix::matrixTest() {
   printWeight(_KH, _9S);
 }
 
-int c_matrix::perceptionTest(cardName real) {
+int c_matrix::perceptionTest(card real) {
   string realName = getCardName(real);
   float totalTrials = 500;
   float totalRight = 0;
@@ -161,8 +161,8 @@ int c_matrix::perceptionTest(cardName real) {
 
 int c_matrix::comprehensiveTest() {
   int res = 0;
-  for(int card = 0; card < 52; card++) {
-    if(perceptionTest((cardName)card) == 1) {
+  for(int i = 0; i < 52; i++) {
+    if(perceptionTest((card)i) == 1) {
       res = 1;
       break;
     }

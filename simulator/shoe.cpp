@@ -6,14 +6,14 @@
 using namespace std;
 
 void shoe::printContents() {
-  for(cardName n : contents) {
+  for(card n : contents) {
     cout << getCardName(n) << endl;
   }
 }
 
 void shoe::addDeck() {
   for(int i = 0; i < 52; i++) {
-    contents.push_back( (cardName)i);
+    contents.push_back( (card)i);
   }
 }
 
@@ -31,7 +31,7 @@ void shoe::reset() {
 void shoe::testBalancedCounting() {
   int sum = 0;
   cout << "lets count " << endl;
-  for(cardName a : contents) {
+  for(card a : contents) {
     PRINT(getCardName(a));
     sum += getCountFromCard(a, HiOpt2);
   }
@@ -39,8 +39,8 @@ void shoe::testBalancedCounting() {
   cout << sum << endl;
 }
 
-cardName shoe::drawCard() {
-  cardName ret = contents.back();
+card shoe::drawCard() {
+  card ret = contents.back();
   contents.pop_back();
   return ret;
 }
@@ -49,6 +49,6 @@ int shoe::getCardsLeftInShoe() {
   return contents.size();
 }
 
-vector<cardName> shoe::getShoe(){
+vector<card> shoe::getShoe(){
   return this->contents;
 }

@@ -15,7 +15,7 @@ void commonInit() {
   g_countingMethods.push_back(HiOpt2);
 }
 
-string getCardName(cardName a) {
+string getCardName(card a) {
   switch (a) {
     case _2S:
       return "2S";
@@ -148,10 +148,14 @@ string getEffectiveCardName(effectiveCard a) {
       return "8";
     case _9:
       return "9";
-    case _10:
-      return "10";
+    case _T:
+      return "T";
   }
   return "ER";
+}
+
+string getEffectiveCardName(card a) {
+  return getEffectiveCardName(getEffectiveCard(a));
 }
 
 int getEffectiveCardValue(effectiveCard a) {
@@ -175,25 +179,29 @@ int getEffectiveCardValue(effectiveCard a) {
       return 8;
     case _9:
       return 9;
-    case _10:
+    case _T:
       return 10;
   }
-  return -0;
+  return 0;
 }
 
-float getCountFromCard(cardName a, countingMethod b) {
+int getEffectiveCardValue(card a) {
+  return getEffectiveCardValue(getEffectiveCard(a));
+}
+
+float getCountFromCard(card a, countingMethod b) {
   vector<int>* thisCountingMethod;
   thisCountingMethod = &g_countingMethods[b];
   return thisCountingMethod->at(getEffectiveCard(a));
 }
 
-effectiveCard getEffectiveCard(cardName a) {
+effectiveCard getEffectiveCard(card a) {
   int rank = a % 13;
   effectiveCard ret;
   if(rank < 9) {
     ret = (effectiveCard)(rank+1);
   } else if(rank < 12) {
-    ret = _10;
+    ret = _T;
   } else {
     ret = _A;
   }
@@ -201,8 +209,12 @@ effectiveCard getEffectiveCard(cardName a) {
 }
 
 void printPlayerCards(gamestate g){
-  for(cardName n : g.playersCards){
+  for(card n : g.stacks[0]){
     cout << getCardName(n) << " ";
   }
   cout << endl;
+}
+
+bool isBlackjack(card a, card b) {
+  return (getEffectiveCardValue(a) + getEffectiveCardValue(b) == 21);
 }

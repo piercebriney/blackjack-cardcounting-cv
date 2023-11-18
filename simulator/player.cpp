@@ -7,15 +7,26 @@ player::player(){
 
 }
 
-void player::seeCard(cardName a) {
+void player::seeCard(card a) {
   cardsCounted++;
   vector<int>* thisCountingMethod;
+  
+  card perceivedCard = hisConfusionMatrix.perceive(a);
+
   thisCountingMethod = &g_countingMethods[hisCountingMethod];
-  runningCount += thisCountingMethod->at(getEffectiveCard(a));
+  runningCount += thisCountingMethod->at(getEffectiveCard(perceivedCard));
 }
 
 float player::getBankroll() {
   return bankroll;
+}
+
+void player::getMoney(float a) {
+  bankroll += a;
+}
+
+void player::loseMoney(float a) {
+  bankroll -= a;
 }
 
 void player::setCountingMethod(countingMethod a) {
@@ -58,9 +69,14 @@ action player::getBasicStrategyAction(gamestate a) {
   return hit;
 }
 
-//player action is a function of the dealer's faceup card, the cards they were dealt, and the true count
-action player::getAction(gamestate a) {
+//player action is a function of the dealer's faceup card, the cards in this stack, and the true count
+action player::getAction(gamestate g, int stackIndex) {
   //actions are derived by checking for deviations to basic strategy
   //and then applying basicStrategy
-  return getHardTotalsAction(a);
+  
+  return getHardTotalsAction(g, 0);
+}
+
+void player::setConfusionMatrix(c_matrix a) {
+  hisConfusionMatrix = a;
 }
