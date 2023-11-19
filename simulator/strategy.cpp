@@ -41,7 +41,7 @@ string lookup(table table, string column, string row) {
   return table[rowIndex][columnIndex];
 }
 
-action getHardTotalsAction(gamestate g, int stackIndex) {
+action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
   loadStrategy();
   int playerSum = 0;
   for(auto c : g.stacks[stackIndex]) {
@@ -63,12 +63,19 @@ action getHardTotalsAction(gamestate g, int stackIndex) {
   string result = lookup(g_hardTotalsTable, column, row);
   if(result == "S") {
     return stay;
-  } else {
+  } else if (result == "H") {
     return hit;
+  } else if (result == "D") {
+    if(trueCount > 1) {
+      return doubledown;
+    } else {
+      return hit;
+    }
   }
+  return stay;
 }
 
-action getSoftTotalsAction(gamestate g, int stackIndex) {
+action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
   //if the player just has an ace, must hit
   if(g.stacks[stackIndex].size() == 1) {
     if(getEffectiveCard(g.stacks[stackIndex][0]) == _A) {
@@ -99,12 +106,26 @@ action getSoftTotalsAction(gamestate g, int stackIndex) {
   string column = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
   string row = to_string(nonAceTotal);
   string result = lookup(g_softTotalsTable, column, row);
+
   //!!! add functionality for doubling down
-  if(result == "S" || result == "Ds") {
+  if(result == "S") {
     return stay;
-  } else {
+  } else if(result == "H") {
     return hit;
+  } else if(result == "Ds") {
+    if(trueCount > 1) {
+      return doubledown;
+    } else {
+      return stay;
+    }
+  } else if(result == "D") {
+    if(trueCount > 1) {
+      return doubledown;
+    } else {
+      return hit;
+    }
   }
+  return stay;
 }
 
 bool shouldPlayerSplit(gamestate g, int stackIndex) {
@@ -120,7 +141,7 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
   string column = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
   string row = getEffectiveCardName(getEffectiveCard(g.stacks[stackIndex][0]));
   string result = lookup(g_pairSplittingTable, column, row);
-  if(result == "Y") {
+  if(result == "Y" || result == "Yn") {
     return 1;
   } else {
     return 0;
@@ -153,7 +174,7 @@ bool shouldPlayerSurrender(gamestate g, int stackIndex) {
   string row = to_string(playerSum);
   string column = getEffectiveCardName(getEffectiveCard(dealerCard));
 
-  string result = lookup(g_hardTotalsTable, column, row);
+  string result = lookup(g_lateSurrenderTable, column, row);
   if(result == "Y") {return true;} else {return false;}
 }
 
@@ -206,7 +227,7 @@ void loadStrategy() {
   {
     {""  , "2", "3" , "4" , "5" , "6" , "7" , "8" , "9" , "T", "A" },
     {"A" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" },
-    {"10", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" },
+    {"T", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" },
     {"9" , "Y" , "Y" , "Y" , "Y" , "Y" , "N" , "Y" , "Y" , "N" , "N" },
     {"8" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" },
     {"7" , "Y" , "Y" , "Y" , "Y" , "Y" , "Y" , "N" , "N" , "N" , "N" },

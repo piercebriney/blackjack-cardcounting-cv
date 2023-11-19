@@ -223,7 +223,10 @@ void printStack(stack s) {
 }
 
 bool isBlackjack(card a, card b) {
-  return (getEffectiveCardValue(a) + getEffectiveCardValue(b) == 21);
+  return 
+    (getEffectiveCard(a) == _T  && getEffectiveCard(b) == _A)
+    ||
+    (getEffectiveCard(a) == _A  && getEffectiveCard(b) == _T);
 }
 
 int getIdealCount(stack s) {

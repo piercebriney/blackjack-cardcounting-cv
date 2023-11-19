@@ -15,9 +15,9 @@ std::string lookup(table table, std::string column, std::string row);
 
 void loadStrategy();
 
-action getHardTotalsAction(gamestate g, int stackIndex);
+action getHardTotalsAction(gamestate g, int stackIndex, float trueCount);
 
-action getSoftTotalsAction(gamestate g, int stackIndex);
+action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount);
 
 bool shouldPlayerSurrender(gamestate g, int stackIndex);
 
