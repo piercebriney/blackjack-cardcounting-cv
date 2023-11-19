@@ -17,7 +17,7 @@ void loadMatrixFromFile(string fileaddress) {
 int main() {
   //srand(time(0));
   
-  cout << "Input seed:";
+  cout << "Input seed:\n>";
   string seedSTR;
   getline(cin, seedSTR);
   if(seedSTR.size() == 0) {
@@ -32,7 +32,7 @@ int main() {
   commonInit();
   loadStrategy();
 
-  printf("What matrix will be loaded?\n>");
+  printf("Input name of c_matrix:\n>");
   
   string input;
   cin >> input;
@@ -40,6 +40,11 @@ int main() {
   string fileaddress = "matrix/" + input + ".csv";
 
   c_matrix myMatrix = c_matrix(fileaddress);
+
+  printf("Input matrix improvement coefficient (0->unchanged, 1->identity matrix):\n>");
+  int perfectness;
+  cin >> perfectness;
+
   myMatrix.perfectify(1);
 
   player joseph;
@@ -54,14 +59,19 @@ int main() {
   dealer myDealer;
   myDealer.setShoe(myShoe);
 
+  int lastBankroll = joseph.getBankroll();
   //!!! Finish main playing logic
   for(int i = 0; i < G_NUM_ROUNDS; i++){
-    cout << endl << "----------" << "Play round " << i << "/" << G_NUM_ROUNDS << " ----------" << endl;
+    cout << endl << "----------" << "Play round " << (i+1) << "/" << G_NUM_ROUNDS << " ----------" << endl;
     if(myDealer.playRound(&joseph)) { cout << "Player went bankrupt." << endl; break;}
     cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
+    int change = joseph.getBankroll() - lastBankroll;
+    cout << "Change in bankroll: " << std::setprecision(100) << change << endl;
+    lastBankroll = joseph.getBankroll();
   }
 
   cout << endl;
   cout << "Player's final bankroll is: " << std::setprecision(100) << joseph.getBankroll() << endl;
   //cout << "Player's final bankroll is: " << joseph.getBankroll() << endl;
+  
 }

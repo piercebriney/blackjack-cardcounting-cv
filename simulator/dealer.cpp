@@ -46,14 +46,30 @@ int dealer::playRound(player* p) {
 
 
   //check if the player got a blackjack
+  bool playerGotBJ = 0;
+  bool dealerGotBJ = 0;
   if(isBlackjack(g.stacks[0][0], g.stacks[0][1])) {
+    playerGotBJ = 1;
+  }
+
+  //check if the dealer got a blackjack
+  if(isBlackjack(g.dealersCards[0],g.dealersCards[1])) {
+    dealerGotBJ = 1;
+  }
+  if(playerGotBJ && !dealerGotBJ) {
     //payout is 3:2
+    cout << "RESULT: Player got a blackjack." << endl;
     int profit = playerBet * 1.5;
     p->getMoney(playerBet + profit);
     return 0;
   }
-  //check if the dealer got a blackjack
-  if(isBlackjack(g.dealersCards[0],g.dealersCards[1])) {
+  if(dealerGotBJ && !playerGotBJ) {
+    cout << "RESULT: Dealer got a blackjack." << endl;
+    return 0;
+  }
+  if(playerGotBJ && dealerGotBJ) {
+    cout << "RESULT: Both player and dealer got blackjacks." << endl;
+    p->getMoney(playerBet);
     return 0;
   }
 
@@ -77,8 +93,9 @@ int dealer::playRound(player* p) {
         p->loseMoney(playerBet);
         vector<card> stackFromSplit;
         card splitCard = g.stacks[i][0];
-        g.stacks[i][0] = herShoe.drawCard();
-        stackFromSplit.push_back(splitCard);
+        card newCard = herShoe.drawCard();
+        p->seeCard(newCard);
+        g.stacks[i][0] = newCard;
         stackFromSplit.push_back(splitCard);
         g.stacks.push_back(stackFromSplit);
         g.actions.push_back(hit);
@@ -88,9 +105,17 @@ int dealer::playRound(player* p) {
         p->seeCard(newCard);
         g.stacks[i].push_back(newCard);
       }else if(playerAction == stay){
-          cout << "Player stands" << endl;
-          handOver = true;
-          g.actions[i] = stay;
+        cout << "Player stands" << endl;
+        handOver = true;
+        g.actions[i] = stay;
+      }else if(playerAction == doubledown) {
+        cout << "Player doubles down" << endl;
+        card newCard = herShoe.drawCard();
+        p->seeCard(newCard);
+        g.stacks[i].push_back(newCard);
+        handOver = true;
+        p->loseMoney(playerBet);
+        g.actions[i] = doubledown;
       }
     }
   }
@@ -107,7 +132,7 @@ int dealer::playRound(player* p) {
   }
   while(dealerSum < 17) {
     dealerSum = 0;
-    cout << "Dealer draws a card" << endl;
+    //cout << "Dealer draws a card" << endl;
     g.dealersCards.push_back(herShoe.drawCard());
     for(auto c : g.dealersCards) {
       if(getEffectiveCard(c) == _A) {
@@ -116,45 +141,54 @@ int dealer::playRound(player* p) {
         dealerSum += getEffectiveCardValue(c);
       }
     }
-    cout << "Dealer's new total is " << dealerSum << endl;
   }
 
   int dealerIdealSum = getIdealCount(g.dealersCards);
   bool dealerBusts = (dealerIdealSum > 21);
 
+  cout << "Dealer's cards sum to " << dealerSum << "." << endl;
+
+  bool kill = 0;
   //determine result for each stackA
   for(int i = 0; i < g.stacks.size(); i++) {
+    int multiplier = 1;
+    if(g.actions[i] == doubledown) {
+      multiplier = 2;
+      g.actions[i] = stay;
+    }
+    int stackIdealSum = getIdealCount(g.stacks[i]);
+    cout << "Stack " << i << " cards sum to " << stackIdealSum << endl;
     if(g.actions[i] == hit) { cout << "Stack actions not properly set" << endl; abort();}
     if(g.actions[i] == surrender) {
       //if the player won, they won't be paid
+      cout << "RESULT: Stack " << i << "SURRENDERED." << endl;
     }
     if(g.actions[i] == stay) {
-      int stackIdealSum = getIdealCount(g.stacks[i]);
       int stackBusts = (stackIdealSum > 21);
       if(dealerBusts && !stackBusts) {
-        cout << "Stack " << i << " won." << endl;
-        p->getMoney(playerBet);
+        cout << "RESULT: Stack " << i << " WON with multiplier " << multiplier << "." << endl;
+        p->getMoney(playerBet*multiplier);
         int profit = playerBet;
-        p->getMoney(profit);
+        p->getMoney(profit*multiplier);
       } else if(stackBusts && !dealerBusts) {
-        cout << "Stack " << i << " lost." << endl;
+        cout << "RESULT: Stack " << i << " LOST." << endl;
 
       } else if(stackBusts && dealerBusts) {
-        p->getMoney(playerBet);
-        cout << "Stack " << i << " tied." << endl;
+        p->getMoney(playerBet*multiplier);
+        cout << "RESULT: Stack " << i << " TIED." << endl;
       } else { //neither busted
         //who has a higher total?
         if(stackIdealSum > dealerIdealSum) {
-          cout << "Stack " << i << " won." << endl;
-          p->getMoney(playerBet);
+          cout << "RESULT: Stack " << i << " WON with multiplier " << multiplier << "." << endl;
+          p->getMoney(playerBet*multiplier);
           int profit = playerBet;
-          p->getMoney(profit);
+          p->getMoney(profit*multiplier);
         } else if(dealerIdealSum > stackIdealSum) {
-          cout << "Stack " << i << " lost." << endl;
+          cout << "RESULT: Stack " << i << " LOST." << endl;
           
         } else if(dealerIdealSum == stackIdealSum) {
-          cout << "Stack " << i << " tied." << endl;
-          p->getMoney(playerBet);
+          cout << "RESULT: Stack " << i << " TIED." << endl;
+          p->getMoney(playerBet*multiplier);
         }
       }
     }

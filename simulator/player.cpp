@@ -13,6 +13,7 @@ void player::seeCard(card a) {
   cardsCounted++;
   vector<int>* thisCountingMethod;
   card perceivedCard = hisConfusionMatrix.perceive(a);
+  //cout << "Perceived " << getCardName(a) << " as " << getCardName(perceivedCard) << endl;
   thisCountingMethod = &g_countingMethods[hisCountingMethod];
   runningCount += thisCountingMethod->at(getEffectiveCard(perceivedCard));
 }
@@ -40,7 +41,6 @@ void player::resetCount() {
 
 //if the player doesn't have an advantage, do the minimum bet
 int player::getBet() {
-  float playerAdvantge;
   float trueCount;
 
   //this is not quite how humans calculate decks remaining!
@@ -56,6 +56,7 @@ int player::getBet() {
 
   //playeradvantage is negative if the trueCount is below 1
   if(trueCount <= 1) {
+    cout << "Player advantage: <0"  << endl;
     return G_MINIMUM_BET;
   } else {
     float playerAdvantage = (trueCount - 1)/200; //playeradvantage increases by 0.5% for every trueCount
@@ -76,6 +77,14 @@ action player::getBasicStrategyAction(gamestate a) {
 
 //player action is a function of the dealer's faceup card, the cards in this stack, and the true count
 action player::getAction(gamestate g, int stackIndex) {
+  float trueCount;
+
+  //this is not quite how humans calculate decks remaining!
+  //as such, it may be overestimating playeradvantage
+  float decksRemaining = cardsCounted;
+  decksRemaining = G_NUM_DECKS - (decksRemaining/52);
+
+  trueCount = runningCount / decksRemaining;
   //actions are derived by checking for deviations to basic strategy
   //and then applying basicStrategy
 
@@ -86,18 +95,18 @@ action player::getAction(gamestate g, int stackIndex) {
 
   if(shouldPlayerSurrender(g, stackIndex)){
     return surrender;
-  }else if(getEffectiveCard(g.stacks[stackIndex][0]) == getEffectiveCard(g.stacks[stackIndex][1]) && shouldPlayerSplit(g, stackIndex)){
+  }else if(g.stacks[stackIndex].size() == 2 && getEffectiveCard(g.stacks[stackIndex][0]) == getEffectiveCard(g.stacks[stackIndex][1]) && shouldPlayerSplit(g, stackIndex)){
     return split;
   }else{
     if(shouldUseHardTotals(g, stackIndex)){
       cout << "useHardTotals" << endl;
-      return getHardTotalsAction(g, stackIndex);
+      return getHardTotalsAction(g, stackIndex, trueCount);
     }else{
       cout << "use soft totals" << endl;
-      return getSoftTotalsAction(g, stackIndex);
+      return getSoftTotalsAction(g, stackIndex, trueCount);
     }
   }
-  return getHardTotalsAction(g, 0);
+  return getHardTotalsAction(g, 0, trueCount);
 }
 
 void player::setConfusionMatrix(c_matrix a) {
