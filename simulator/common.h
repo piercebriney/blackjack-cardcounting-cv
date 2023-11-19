@@ -42,11 +42,18 @@ typedef std::vector<card> stack;
 struct gamestate {
   std::vector<stack> stacks; //when you split, the player changes one stack into two stacks
   std::vector<action> actions; //the action the player has set for each stack- they can surrender on one and not on another, maybe
-  std::vector<card> dealersCards; //player can only see dealersCards[0]
+  stack dealersCards; //player can only see dealersCards[0]
 };
 
 void printPlayerCards(gamestate g, int stackIndex);
 
+void printStack(stack s);
+
 bool isBlackjack(card a, card b);
+
+//count cards so that they are as high as possible without going over 21
+int getIdealCount(stack s);
+
+card getRandomCard();
 
 #endif

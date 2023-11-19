@@ -1,7 +1,7 @@
 #ifndef PARAMS
 #define PARAMS
 
-#define G_NUM_ROUNDS 1
+#define G_NUM_ROUNDS 300
 #define G_NUM_DECKS 6
 #define G_STARTING_BANKROLL 1000000
 #define G_MINIMUM_BET 25

@@ -1,5 +1,7 @@
 #include "player.h"
 #include "strategy.h"
+#include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -10,9 +12,7 @@ player::player(){
 void player::seeCard(card a) {
   cardsCounted++;
   vector<int>* thisCountingMethod;
-  
   card perceivedCard = hisConfusionMatrix.perceive(a);
-
   thisCountingMethod = &g_countingMethods[hisCountingMethod];
   runningCount += thisCountingMethod->at(getEffectiveCard(perceivedCard));
 }
@@ -50,6 +50,10 @@ int player::getBet() {
 
   trueCount = runningCount / decksRemaining;
 
+  //cout << "RC: " << runningCount << endl;
+  cout << "TC: " << trueCount << endl;
+  cout << "Total counted: " << cardsCounted << endl;
+
   //playeradvantage is negative if the trueCount is below 1
   if(trueCount <= 1) {
     return G_MINIMUM_BET;
@@ -59,6 +63,7 @@ int player::getBet() {
     float ret = playerAdvantage * bankroll;
     if(ret < G_MINIMUM_BET) {ret = G_MINIMUM_BET;}
     if(ret > G_MAXIMUM_BET) {ret = G_MAXIMUM_BET;}
+    cout << "Player advantage: " << playerAdvantage << endl;
     return ret;
   }
 }
@@ -73,14 +78,22 @@ action player::getBasicStrategyAction(gamestate a) {
 action player::getAction(gamestate g, int stackIndex) {
   //actions are derived by checking for deviations to basic strategy
   //and then applying basicStrategy
+
+  //did thisStack bust?
+  if(getIdealCount(g.stacks[stackIndex]) > 21) {
+    return stay;
+  }
+
   if(shouldPlayerSurrender(g, stackIndex)){
     return surrender;
-  }else if(g.stacks[stackIndex][0] == g.stacks[stackIndex][1] && shouldPlayerSplit(g, stackIndex)){
+  }else if(getEffectiveCard(g.stacks[stackIndex][0]) == getEffectiveCard(g.stacks[stackIndex][1]) && shouldPlayerSplit(g, stackIndex)){
     return split;
   }else{
-    if(shouldPlayerHardTotal(g, stackIndex)){
+    if(shouldUseHardTotals(g, stackIndex)){
+      cout << "useHardTotals" << endl;
       return getHardTotalsAction(g, stackIndex);
     }else{
+      cout << "use soft totals" << endl;
       return getSoftTotalsAction(g, stackIndex);
     }
   }

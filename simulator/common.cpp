@@ -215,6 +215,52 @@ void printPlayerCards(gamestate g, int stackIndex){
   cout << endl;
 }
 
+void printStack(stack s) {
+  for(card c : s) {
+    cout << getCardName(c) << " ";
+  }
+  cout << endl;
+}
+
 bool isBlackjack(card a, card b) {
   return (getEffectiveCardValue(a) + getEffectiveCardValue(b) == 21);
+}
+
+int getIdealCount(stack s) {
+  stack nonAces;
+  stack aces;
+  for(auto c : s) {
+    if(getEffectiveCard(c) == _A) {
+      aces.push_back(c);
+    } else {
+      nonAces.push_back(c);
+    }
+  }
+  int hardTotal = 0;
+  for(auto c : nonAces) {
+    hardTotal += getEffectiveCardValue(c);
+  }
+
+  int softTotal = 0;
+  softTotal = aces.size();
+  int validLowTotal = 0;
+  if(hardTotal + softTotal <= 21) {
+    validLowTotal = hardTotal + softTotal;
+  } else {
+    return 22; //definitely bust
+  }
+
+  //try to get the total higher by counting aces as 11 instead of 1
+  int validTotal = validLowTotal;
+  for(int i = 0; i < aces.size(); i++) {
+    int experimentalTotal = validTotal - 1 + 11;
+    if(experimentalTotal <= 21) {
+      validTotal = experimentalTotal;
+    }
+  }
+  return validTotal;
+}
+
+card getRandomCard() {
+  return (card)(rand() % 52);
 }

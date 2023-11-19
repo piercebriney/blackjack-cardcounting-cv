@@ -69,6 +69,16 @@ action getHardTotalsAction(gamestate g, int stackIndex) {
 }
 
 action getSoftTotalsAction(gamestate g, int stackIndex) {
+  //if the player just has an ace, must hit
+  if(g.stacks[stackIndex].size() == 1) {
+    if(getEffectiveCard(g.stacks[stackIndex][0]) == _A) {
+      cout << "" << endl;
+      return hit;
+    } else {
+      cout << "getSoftTotalsAction() called on stack with one card which isn't an ace" << endl;
+      abort();
+    }
+  }
 
   int nonAceTotal = 0;
   //get total of all cards which aren't aces
@@ -86,8 +96,8 @@ action getSoftTotalsAction(gamestate g, int stackIndex) {
     return stay;
   }
 
-  string column = to_string(nonAceTotal);
-  string row = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
+  string column = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
+  string row = to_string(nonAceTotal);
   string result = lookup(g_softTotalsTable, column, row);
   //!!! add functionality for doubling down
   if(result == "S" || result == "Ds") {
@@ -107,8 +117,8 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
     throw std::invalid_argument("getSplitAction() called but the stack's cards aren't identical");
   }
 
-  string column = getEffectiveCardName(getEffectiveCard(g.stacks[stackIndex][0]));
-  string row = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
+  string column = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
+  string row = getEffectiveCardName(getEffectiveCard(g.stacks[stackIndex][0]));
   string result = lookup(g_pairSplittingTable, column, row);
   if(result == "Y") {
     return 1;
@@ -117,11 +127,8 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
   }
 }
 
-bool shouldPlayerHardTotal(gamestate g, int stackIndex){
+bool shouldUseHardTotals(gamestate g, int stackIndex){
   bool shouldHardTotal = true;
-  if(g.stacks[stackIndex].size() > 2){
-    return true;
-  }
   for(int i = 0; i < g.stacks[stackIndex].size(); i++) {
     if(getEffectiveCard(g.stacks[stackIndex][i]) == _A) {
       shouldHardTotal = false;
