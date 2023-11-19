@@ -6,6 +6,7 @@
 #include <string>
 #include "strategy.h"
 #include "dealer.h"
+#include <iomanip>
 using namespace std;
 
 
@@ -14,11 +15,24 @@ void loadMatrixFromFile(string fileaddress) {
 }
 
 int main() {
-  srand(time(0));
+  //srand(time(0));
+  
+  cout << "Input seed:";
+  string seedSTR;
+  getline(cin, seedSTR);
+  if(seedSTR.size() == 0) {
+    int seed = time(0);
+    cout << "Using seed " << seed << "." << endl;
+    srand(time(0));
+  } else {
+    cout << "Using seed " << seedSTR << "." << endl;
+    srand(stoi(seedSTR));
+  }
+
   commonInit();
   loadStrategy();
 
-  /*printf("What matrix will be loaded?\n>");
+  printf("What matrix will be loaded?\n>");
   
   string input;
   cin >> input;
@@ -26,38 +40,28 @@ int main() {
   string fileaddress = "matrix/" + input + ".csv";
 
   c_matrix myMatrix = c_matrix(fileaddress);
-  
-  myMatrix.perfectify(1);*/
+  myMatrix.perfectify(1);
 
-  //Creates Player object and sets counting method to HiOpt2
   player joseph;
   joseph.setCountingMethod(HiOpt2);
+  joseph.setConfusionMatrix(myMatrix);
   
   //Creates shoe, fills shoe with cards, and shuffles deck
   shoe myShoe;
   myShoe.reset();
 
-
   //Creates dealer object and set the shoe to the one made previously
   dealer myDealer;
   myDealer.setShoe(myShoe);
-  /*PRINT(lookup(g_hardTotalsTable, "2", "14"));
-
-  gamestate imaginaryGamestate;
-  imaginaryGamestate.stacks[0].push_back(_4S);
-  imaginaryGamestate.stacks[0].push_back(_9S);
-  imaginaryGamestate.dealersCards.push_back(_AH);
-
-  action whatToDo = getHardTotalsAction(imaginaryGamestate, 0);
-  if(whatToDo == hit) {
-    printf("Action is hit");
-  } else {
-    printf("Action is stay");
-  }*/
 
   //!!! Finish main playing logic
   for(int i = 0; i < G_NUM_ROUNDS; i++){
-    cout << "Player's current Bankroll is: " << joseph.getBankroll() << endl;
-    myDealer.playRound(joseph);
+    cout << endl << "----------" << "Play round " << i << "/" << G_NUM_ROUNDS << " ----------" << endl;
+    if(myDealer.playRound(&joseph)) { cout << "Player went bankrupt." << endl; break;}
+    cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
   }
+
+  cout << endl;
+  cout << "Player's final bankroll is: " << std::setprecision(100) << joseph.getBankroll() << endl;
+  //cout << "Player's final bankroll is: " << joseph.getBankroll() << endl;
 }

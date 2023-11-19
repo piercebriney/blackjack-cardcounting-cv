@@ -11,7 +11,7 @@ class player {
   int cardsCounted = 0;
 
   int decks = G_NUM_DECKS;
-  float bankroll = G_STARTING_BANKROLL;
+  int bankroll = G_STARTING_BANKROLL;
   countingMethod hisCountingMethod = HiOpt2;
 
   c_matrix hisConfusionMatrix;
