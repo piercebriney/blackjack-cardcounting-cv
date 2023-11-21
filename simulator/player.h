@@ -18,7 +18,7 @@ class player {
 
 public:
   player();
-  void seeCard(card a);
+  card seeCard(card a);
   void resetCount();
   int getBet();
   action getBasicStrategyAction(gamestate a);
@@ -30,6 +30,8 @@ public:
   void loseMoney(float a);
   void setCountingMethod(countingMethod a);
   void setConfusionMatrix(c_matrix a);
+
+  card perceive(card real);
 };
 
 #endif

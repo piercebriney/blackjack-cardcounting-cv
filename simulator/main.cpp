@@ -45,7 +45,7 @@ int main() {
   int perfectness;
   cin >> perfectness;
 
-  myMatrix.perfectify(1);
+  myMatrix.perfectify(perfectness);
 
   player joseph;
   joseph.setCountingMethod(HiOpt2);
@@ -72,6 +72,7 @@ int main() {
 
   cout << endl;
   cout << "Player's final bankroll is: " << std::setprecision(100) << joseph.getBankroll() << endl;
-  //cout << "Player's final bankroll is: " << joseph.getBankroll() << endl;
-  
+  int profit = joseph.getBankroll() - G_STARTING_BANKROLL;
+  int hourlyWage = profit / (G_NUM_ROUNDS / G_NUM_ROUNDS_PER_HOUR);
+  cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
 }
