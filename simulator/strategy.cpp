@@ -12,6 +12,8 @@ table g_softTotalsTable;
 table g_pairSplittingTable;
 table g_lateSurrenderTable;
 
+vector<deviation> g_illustrious_18;
+
 string lookup(table table, string column, string row) {
   
   int rowIndex = -1; int columnIndex = -1;
@@ -178,6 +180,32 @@ bool shouldPlayerSurrender(gamestate g, int stackIndex) {
   if(result == "Y") {return true;} else {return false;}
 }
 
+action getActionFromDeviations(gamestate g, int stackIndex, float trueCount) {
+  
+  for(deviation d : g_illustrious_18) {
+    if(  
+        (!d.activeLessThan && trueCount > d.index)
+        ||
+        (d.activeLessThan && trueCount < d.index)
+        ) {
+
+      if(d.useHandNotTotal) {
+        if(areStacksEffectivelyEqual(g.stacks[stackIndex], d.hand) && d.dealerUpCard == getEffectiveCard(g.dealersCards[0])) {
+          return d.result;
+        }
+  
+      } else {
+        int sum = getLowSumOfStack(g.stacks[stackIndex]);
+        if(sum == d.total && d.dealerUpCard == getEffectiveCard(g.dealersCards[0])) { 
+          return d.result;
+
+        }
+      }
+    }
+  }
+  return voidaction;
+}
+
 void loadStrategy() {
 
   //Cells in the first row represent the dealer's faceup card
@@ -208,7 +236,7 @@ void loadStrategy() {
   //and D for double or hit
   g_softTotalsTable = 
   {
-    {""  , "2", "3" , "4" , "5" , "6" , "7" , "8" , "9" , "T", "A" },
+    {"" , "2" , "3" , "4" , "5" , "6" , "7" , "8" , "9" , "T" , "A" },
     {"9", "S" , "S" , "S" , "S" , "S" , "S" , "S" , "S" , "S" , "S" },
     {"8", "S" , "S" , "S" , "S" , "Ds", "S" , "S" , "S" , "S" , "S" },
     {"7", "Ds", "Ds", "Ds", "Ds", "Ds", "S" , "S" , "H" , "H" , "H" },
@@ -248,5 +276,138 @@ void loadStrategy() {
     {"15", "N", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "Y" , "N" },
     {"14", "N", "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" , "N" },
   };
+  
+  { 
 
+    g_illustrious_18.clear();
+    //Donald Schlesinger's illustrious 18
+    deviation two;
+    two.total = 16;
+    two.dealerUpCard = _T;
+    two.index = 3;
+    two.result = stay;
+    g_illustrious_18.push_back(two);
+  
+    deviation three;
+    three.total = 15;
+    three.dealerUpCard = _T;
+    three.index = 4;
+    three.result = stay;
+    g_illustrious_18.push_back(three);
+
+    deviation four;
+    four.useHandNotTotal = 1;
+    four.hand.push_back(_10D);
+    four.hand.push_back(_10D);
+    four.dealerUpCard = _5;
+    four.index = 5;
+    four.result = split;
+    g_illustrious_18.push_back(four);
+
+    deviation five;
+    five.useHandNotTotal = 1;
+    five.hand.push_back(_10D);
+    five.hand.push_back(_10D);
+    five.dealerUpCard = _6;
+    five.index = 4;
+    five.result = split;
+    g_illustrious_18.push_back(five);
+
+    deviation six;
+    six.total = 10;
+    six.dealerUpCard = _T;
+    six.index = 4;
+    six.result = doubledown;
+    g_illustrious_18.push_back(six);
+
+    deviation seven;
+    seven.total = 12;
+    seven.dealerUpCard = _3;
+    seven.index = 2;
+    seven.result = stay;
+    g_illustrious_18.push_back(seven);
+
+    deviation eight;
+    eight.total = 12;
+    eight.dealerUpCard = _2;
+    eight.index = 3;
+    eight.result = stay;
+    g_illustrious_18.push_back(eight);
+
+    deviation nine;
+    nine.total = 11;
+    nine.dealerUpCard = _A;
+    nine.index = 1;
+    nine.result = doubledown;
+    g_illustrious_18.push_back(nine);
+
+    deviation ten;
+    ten.total = 9;
+    ten.dealerUpCard = _2;
+    ten.index = 1;
+    ten.result = doubledown;
+    g_illustrious_18.push_back(ten);
+
+    deviation eleven;
+    eleven.total = 10;
+    eleven.dealerUpCard = _A;
+    eleven.index = 4;
+    eleven.result = doubledown;
+    g_illustrious_18.push_back(eleven);
+
+    deviation twelve;
+    twelve.total = 9;
+    twelve.dealerUpCard = _7;
+    twelve.index = 3;
+    twelve.result = doubledown;
+    g_illustrious_18.push_back(twelve);
+
+    deviation thirteen;
+    thirteen.total = 16;
+    thirteen.dealerUpCard = _5;
+    thirteen.index = 9;
+    thirteen.result = stay;
+    g_illustrious_18.push_back(thirteen);
+
+    deviation fourteen;
+    fourteen.total = 13;
+    fourteen.dealerUpCard = _2;
+    fourteen.index = -1;
+    fourteen.result = stay;
+    g_illustrious_18.push_back(fourteen);
+
+    deviation fifteen;
+    fifteen.total = 12;
+    fifteen.dealerUpCard = _4;
+    fifteen.index = 0;
+    fifteen.result = stay;
+    fifteen.activeLessThan = 1;
+    g_illustrious_18.push_back(fifteen);
+
+    deviation sixteen;
+    sixteen.total = 12;
+    sixteen.dealerUpCard = _5;
+    sixteen.index = -2;
+    sixteen.result = stay;
+    sixteen.activeLessThan = 1;
+    g_illustrious_18.push_back(sixteen);
+
+    deviation seventeen;
+    seventeen.total = 12;
+    seventeen.dealerUpCard = _6;
+    seventeen.index = -1;
+    seventeen.result = stay;
+    seventeen.activeLessThan = 1;
+    g_illustrious_18.push_back(seventeen);
+
+    deviation eighteen;
+    eighteen.total = 13;
+    eighteen.dealerUpCard = _3;
+    eighteen.index = -2;
+    eighteen.result = stay;
+    eighteen.activeLessThan = 1;
+    g_illustrious_18.push_back(eighteen);
+
+  }
+  
 }
