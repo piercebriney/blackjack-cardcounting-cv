@@ -9,13 +9,14 @@ player::player(){
 
 }
 
-void player::seeCard(card a) {
+card player::seeCard(card a) {
   cardsCounted++;
   vector<int>* thisCountingMethod;
   card perceivedCard = hisConfusionMatrix.perceive(a);
-  //cout << "Perceived " << getCardName(a) << " as " << getCardName(perceivedCard) << endl;
+  cout << "Perceived " << getCardName(a) << " as " << getCardName(perceivedCard) << endl;
   thisCountingMethod = &g_countingMethods[hisCountingMethod];
   runningCount += thisCountingMethod->at(getEffectiveCard(perceivedCard));
+  return perceivedCard;
 }
 
 float player::getBankroll() {
@@ -97,10 +98,10 @@ action player::getAction(gamestate g, int stackIndex) {
     return split;
   }else{
     if(shouldUseHardTotals(g, stackIndex)){
-      cout << "useHardTotals" << endl;
+      cout << "Player uses Hard Totals to decide." << endl;
       return getHardTotalsAction(g, stackIndex, trueCount);
     }else{
-      cout << "use soft totals" << endl;
+      cout << "Player uses Soft Totals to decide" << endl;
       return getSoftTotalsAction(g, stackIndex, trueCount);
     }
   }
@@ -119,9 +120,13 @@ float player::getTrueCount() {
 
 bool player::takesInsurance() {
   float tc = getTrueCount();
-  return (tc > 3);
+  return shouldPlayerInsure(tc);
 }
 
 void player::setConfusionMatrix(c_matrix a) {
   hisConfusionMatrix = a;
+}
+
+card player::perceive(card real) {
+  return hisConfusionMatrix.perceive(real);
 }

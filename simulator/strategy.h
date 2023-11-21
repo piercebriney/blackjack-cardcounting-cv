@@ -22,9 +22,11 @@ action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount);
 
 bool shouldPlayerSurrender(gamestate g, int stackIndex);
 
+bool shouldPlayerInsure(float trueCount);
+
 bool shouldPlayerSplit(gamestate g, int stackIndex);
 
-bool shouldPlayerTakeInsurance();
+bool shouldPlayerTakeInsurance(float trueCount);
 
 bool shouldUseHardTotals(gamestate g, int stackIndex);
 

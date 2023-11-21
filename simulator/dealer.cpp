@@ -31,18 +31,23 @@ int dealer::playRound(player* p) {
   card b = herShoe.drawCard();
   card c = herShoe.drawCard();
   card d = herShoe.drawCard();
+
   vector<card> initCards;
+  vector<card> initPerceivedCards;
+
   initCards.push_back(a);
   initCards.push_back(b);
+
+  initPerceivedCards.push_back(p->seeCard(a));
+  initPerceivedCards.push_back(p->seeCard(b));
+
   g.stacks.push_back(initCards);
+  g.perceivedStacks.push_back(initPerceivedCards);
   g.actions.push_back(hit);
-  //g.stacks[0].push_back(a);
-  //g.stacks[0].push_back(b);
   g.dealersCards.push_back(c);
   g.dealersCards.push_back(d);
-  p->seeCard(a);
-  p->seeCard(b);
-  p->seeCard(c);
+  g.dealersPerceivedCards.push_back(p->seeCard(c));
+
 
   bool tookInsurance = 0;
   //check if we should offer the player insurance
@@ -108,17 +113,19 @@ int dealer::playRound(player* p) {
         cout << "Player splits:" << endl; 
         p->loseMoney(playerBet);
         vector<card> stackFromSplit;
+        vector<card> perceivedStackFromSplit;
         card splitCard = g.stacks[i][0];
         card newCard = herShoe.drawCard();
-        p->seeCard(newCard);
         g.stacks[i][0] = newCard;
+        g.perceivedStacks[i][0] = p->seeCard(newCard);
         stackFromSplit.push_back(splitCard);
         g.stacks.push_back(stackFromSplit);
+        g.perceivedStacks.push_back(perceivedStackFromSplit);
         g.actions.push_back(hit);
       }else if(playerAction == hit){
         cout << "Player hits" << endl; 
         card newCard = herShoe.drawCard();
-        p->seeCard(newCard);
+        g.perceivedStacks[i].push_back(p->seeCard(newCard));
         g.stacks[i].push_back(newCard);
       }else if(playerAction == stay){
         cout << "Player stands" << endl;
@@ -128,6 +135,7 @@ int dealer::playRound(player* p) {
         cout << "Player doubles down" << endl;
         card newCard = herShoe.drawCard();
         p->seeCard(newCard);
+        g.perceivedStacks[i].push_back(p->seeCard(newCard));
         g.stacks[i].push_back(newCard);
         handOver = true;
         p->loseMoney(playerBet);
@@ -177,7 +185,7 @@ int dealer::playRound(player* p) {
     if(g.actions[i] == hit) { cout << "Stack actions not properly set" << endl; abort();}
     if(g.actions[i] == surrender) {
       //if the player won, they won't be paid
-      cout << "RESULT: Stack " << i << "SURRENDERED." << endl;
+      cout << "RESULT: Stack " << i << " was SURRENDERED." << endl;
     }
     if(g.actions[i] == stay) {
       int stackBusts = (stackIdealSum > 21);

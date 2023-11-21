@@ -46,7 +46,7 @@ string lookup(table table, string column, string row) {
 action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
   loadStrategy();
   int playerSum = 0;
-  for(auto c : g.stacks[stackIndex]) {
+  for(auto c : g.perceivedStacks[stackIndex]) {
     playerSum+=getEffectiveCardValue(getEffectiveCard(c));
   }
 
@@ -55,7 +55,7 @@ action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
   }
 
   card dealerCard;
-  dealerCard = g.dealersCards[0];
+  dealerCard = g.dealersPerceivedCards[0];
 
   string column, row;
   
@@ -68,7 +68,7 @@ action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
   } else if (result == "H") {
     return hit;
   } else if (result == "D") {
-    if(trueCount > 1) {
+    if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
       return doubledown;
     } else {
       return hit;
@@ -79,33 +79,32 @@ action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
 
 action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
   //if the player just has an ace, must hit
-  if(g.stacks[stackIndex].size() == 1) {
-    if(getEffectiveCard(g.stacks[stackIndex][0]) == _A) {
+  if(g.perceivedStacks[stackIndex].size() == 1) {
+    if(getEffectiveCard(g.perceivedStacks[stackIndex][0]) == _A) {
       cout << "" << endl;
       return hit;
     } else {
-      cout << "getSoftTotalsAction() called on stack with one card which isn't an ace" << endl;
-      abort();
+      return hit; //this is only possible with flawed perception
     }
   }
 
   int nonAceTotal = 0;
   //get total of all cards which aren't aces
-  for(int i = 0; i < g.stacks[stackIndex].size(); i++) {
-    if(getEffectiveCard(g.stacks[stackIndex][i]) != _A) {
-      nonAceTotal += getEffectiveCardValue(g.stacks[stackIndex][i]);
+  for(int i = 0; i < g.perceivedStacks[stackIndex].size(); i++) {
+    if(getEffectiveCard(g.perceivedStacks[stackIndex][i]) != _A) {
+      nonAceTotal += getEffectiveCardValue(g.perceivedStacks[stackIndex][i]);
     }
   }
 
   if(nonAceTotal == 0) {
-    throw std::invalid_argument("getSoftTotalsAction() called but player has no non-ace cards.");
+    return hit;
   }
 
   if(nonAceTotal > 9) {
     return stay;
   }
 
-  string column = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
+  string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
   string row = to_string(nonAceTotal);
   string result = lookup(g_softTotalsTable, column, row);
 
@@ -115,13 +114,13 @@ action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
   } else if(result == "H") {
     return hit;
   } else if(result == "Ds") {
-    if(trueCount > 1) {
+    if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
       return doubledown;
     } else {
       return stay;
     }
   } else if(result == "D") {
-    if(trueCount > 1) {
+    if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
       return doubledown;
     } else {
       return hit;
@@ -140,8 +139,8 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
     throw std::invalid_argument("getSplitAction() called but the stack's cards aren't identical");
   }
 
-  string column = getEffectiveCardName(getEffectiveCard(g.dealersCards[0]));
-  string row = getEffectiveCardName(getEffectiveCard(g.stacks[stackIndex][0]));
+  string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
+  string row = getEffectiveCardName(getEffectiveCard(g.perceivedStacks[stackIndex][0]));
   string result = lookup(g_pairSplittingTable, column, row);
   if(result == "Y" || result == "Yn") {
     return 1;
@@ -152,8 +151,8 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
 
 bool shouldUseHardTotals(gamestate g, int stackIndex){
   bool shouldHardTotal = true;
-  for(int i = 0; i < g.stacks[stackIndex].size(); i++) {
-    if(getEffectiveCard(g.stacks[stackIndex][i]) == _A) {
+  for(int i = 0; i < g.perceivedStacks[stackIndex].size(); i++) {
+    if(getEffectiveCard(g.perceivedStacks[stackIndex][i]) == _A) {
       shouldHardTotal = false;
     }
   }
@@ -180,6 +179,10 @@ bool shouldPlayerSurrender(gamestate g, int stackIndex) {
   if(result == "Y") {return true;} else {return false;}
 }
 
+bool shouldPlayerInsure(float trueCount) {
+  return (trueCount > 3);
+}
+
 action getActionFromDeviations(gamestate g, int stackIndex, float trueCount) {
   
   for(deviation d : g_illustrious_18) {
@@ -190,12 +193,12 @@ action getActionFromDeviations(gamestate g, int stackIndex, float trueCount) {
         ) {
 
       if(d.useHandNotTotal) {
-        if(areStacksEffectivelyEqual(g.stacks[stackIndex], d.hand) && d.dealerUpCard == getEffectiveCard(g.dealersCards[0])) {
+        if(areStacksEffectivelyEqual(g.perceivedStacks[stackIndex], d.hand) && d.dealerUpCard == getEffectiveCard(g.dealersPerceivedCards[0])) {
           return d.result;
         }
   
       } else {
-        int sum = getLowSumOfStack(g.stacks[stackIndex]);
+        int sum = getLowSumOfStack(g.perceivedStacks[stackIndex]);
         if(sum == d.total && d.dealerUpCard == getEffectiveCard(g.dealersCards[0])) { 
           return d.result;
 
