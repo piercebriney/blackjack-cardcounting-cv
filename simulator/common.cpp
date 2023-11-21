@@ -1,6 +1,7 @@
 #include "common.h"
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -266,4 +267,32 @@ int getIdealCount(stack s) {
 
 card getRandomCard() {
   return (card)(rand() % 52);
+}
+
+bool areStacksEqual(stack a, stack b) {
+  sort(a.begin(), a.end());
+  sort(b.begin(), b.end());
+  return a == b;
+}
+
+bool areStacksEffectivelyEqual(stack a, stack b) {
+  vector<effectiveCard> ea;
+  for(card c : a) {
+    ea.push_back(getEffectiveCard(c));
+  }
+  vector<effectiveCard> eb;
+  for(card c : b) {
+    eb.push_back(getEffectiveCard(c));
+  }
+  sort(ea.begin(), ea.end());
+  sort(eb.begin(), eb.end());
+  return ea == eb;
+}
+
+int getLowSumOfStack(stack a) {
+  int sum = 0;
+  for(card c : a) {
+    sum += getEffectiveCardValue(c);
+  }
+  return sum;
 }

@@ -77,20 +77,18 @@ action player::getBasicStrategyAction(gamestate a) {
 
 //player action is a function of the dealer's faceup card, the cards in this stack, and the true count
 action player::getAction(gamestate g, int stackIndex) {
-  float trueCount;
-
-  //this is not quite how humans calculate decks remaining!
-  //as such, it may be overestimating playeradvantage
-  float decksRemaining = cardsCounted;
-  decksRemaining = G_NUM_DECKS - (decksRemaining/52);
-
-  trueCount = runningCount / decksRemaining;
-  //actions are derived by checking for deviations to basic strategy
-  //and then applying basicStrategy
+  float trueCount = getTrueCount();
 
   //did thisStack bust?
   if(getIdealCount(g.stacks[stackIndex]) > 21) {
     return stay;
+  }
+
+  //check for deviations
+  action actionFromDeviations = getActionFromDeviations(g, stackIndex, trueCount);
+  if(actionFromDeviations != voidaction) {
+    cout << "Player took a deviation from basic strategy." << endl;
+    return actionFromDeviations;
   }
 
   if(shouldPlayerSurrender(g, stackIndex)){
@@ -107,6 +105,21 @@ action player::getAction(gamestate g, int stackIndex) {
     }
   }
   return getHardTotalsAction(g, 0, trueCount);
+}
+
+float player::getTrueCount() {
+  float trueCount;
+
+  float decksRemaining = cardsCounted;
+  decksRemaining = G_NUM_DECKS - (decksRemaining/52);
+
+  trueCount = runningCount / decksRemaining;
+  return trueCount;
+}
+
+bool player::takesInsurance() {
+  float tc = getTrueCount();
+  return (tc > 3);
 }
 
 void player::setConfusionMatrix(c_matrix a) {

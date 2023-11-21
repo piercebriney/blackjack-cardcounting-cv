@@ -17,7 +17,7 @@ enum card {_2S,_3S,_4S,_5S,_6S,_7S,_8S,_9S,_10S,_JS,_QS,_KS,_AS,
 
 enum effectiveCard {_A, _2, _3, _4, _5, _6, _7, _8, _9, _T};
 
-enum action {hit, stay, split, doubledown, surrender};
+enum action {hit, stay, split, doubledown, surrender, voidaction};
 
 extern std::vector<std::vector<int>>g_countingMethods;
 
@@ -45,15 +45,31 @@ struct gamestate {
   stack dealersCards; //player can only see dealersCards[0]
 };
 
+struct deviation {
+  int total; //the player's sum
+  stack hand; //the player's hand
+  bool useHandNotTotal = 0; //set to 1 to use hand instead of total
+  effectiveCard dealerUpCard;
+  int index; //if TC is above index, use result instead of BS
+  action result;
+  bool activeLessThan = 0; //activate if it's tc is less than index
+};
+
 void printPlayerCards(gamestate g, int stackIndex);
 
 void printStack(stack s);
 
 bool isBlackjack(card a, card b);
 
+bool areStacksEqual(stack a, stack b);
+
+bool areStacksEffectivelyEqual(stack a, stack b);
+
 //count cards so that they are as high as possible without going over 21
 int getIdealCount(stack s);
 
 card getRandomCard();
+
+int getLowSumOfStack(stack a);
 
 #endif

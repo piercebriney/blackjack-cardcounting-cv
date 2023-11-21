@@ -44,6 +44,16 @@ int dealer::playRound(player* p) {
   p->seeCard(b);
   p->seeCard(c);
 
+  bool tookInsurance = 0;
+  //check if we should offer the player insurance
+  if(getEffectiveCard(g.dealersCards[0]) == _A) {
+    if(p->takesInsurance() && p->getBankroll() > (playerBet / 2)) {
+      cout << "The player purchases insurance." << endl;
+      tookInsurance = 1;
+      p->loseMoney(playerBet / 2);
+    }
+  }
+
 
   //check if the player got a blackjack
   bool playerGotBJ = 0;
@@ -55,6 +65,12 @@ int dealer::playRound(player* p) {
   //check if the dealer got a blackjack
   if(isBlackjack(g.dealersCards[0],g.dealersCards[1])) {
     dealerGotBJ = 1;
+  }
+  if(dealerGotBJ && tookInsurance) {
+    cout << "Dealer got a blackjack and the player was awarded for insurance." << endl;
+    p->getMoney(playerBet / 2);
+    p->getMoney(playerBet / 2);
+    p->getMoney(playerBet / 2);
   }
   if(playerGotBJ && !dealerGotBJ) {
     //payout is 3:2
