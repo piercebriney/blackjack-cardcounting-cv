@@ -40,6 +40,11 @@ void player::resetCount() {
   cardsCounted = 0;
 }
 
+void player::resetAll(){
+  resetCount();
+  bankroll = G_STARTING_BANKROLL;
+}
+
 //if the player doesn't have an advantage, do the minimum bet
 int player::getBet() {
   float trueCount;

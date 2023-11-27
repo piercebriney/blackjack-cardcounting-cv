@@ -30,6 +30,7 @@ public:
   void loseMoney(float a);
   void setCountingMethod(countingMethod a);
   void setConfusionMatrix(c_matrix a);
+  void resetAll();
 
   card perceive(card real);
 };

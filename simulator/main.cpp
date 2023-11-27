@@ -1,3 +1,4 @@
+#include "analysis.h"
 #include "common.h"
 #include "matrix.h"
 #include "player.h"
@@ -58,7 +59,7 @@ int main() {
   //Creates dealer object and set the shoe to the one made previously
   dealer myDealer;
   myDealer.setShoe(myShoe);
-
+  
   int lastBankroll = joseph.getBankroll();
   //!!! Finish main playing logic
   for(int i = 0; i < G_NUM_ROUNDS; i++){
@@ -75,4 +76,9 @@ int main() {
   int profit = joseph.getBankroll() - G_STARTING_BANKROLL;
   int hourlyWage = profit / (G_NUM_ROUNDS / G_NUM_ROUNDS_PER_HOUR);
   cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
+  
+ analysis a(myMatrix);
+ double x = a.getAverageProfit(100, G_NUM_ROUNDS);
+ 
+
 }
