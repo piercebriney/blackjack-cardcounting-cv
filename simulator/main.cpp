@@ -49,7 +49,7 @@ int main() {
   myMatrix.perfectify(perfectness);
 
   player joseph;
-  joseph.setCountingMethod(HiOpt2);
+  joseph.setCountingMethod(HiLo);
   joseph.setConfusionMatrix(myMatrix);
   
   //Creates shoe, fills shoe with cards, and shuffles deck
