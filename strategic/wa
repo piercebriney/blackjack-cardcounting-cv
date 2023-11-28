@@ -1,0 +1,64 @@
+#include "analysis.h"
+#include "common.h"
+#include "matrix.h"
+#include "player.h"
+#include "shoe.h"
+#include <iostream>
+#include <string>
+#include "strategy.h"
+#include "dealer.h"
+#include <iomanip>
+using namespace std;
+
+int main() {
+ 
+  commonInit();
+
+  player joseph;
+  joseph.setCountingMethod(HiLo);
+
+  c_matrix myMatrix;
+  myMatrix.perfectify(1);
+  joseph.setConfusionMatrix(myMatrix);
+
+
+  while(1) {
+
+    cout << "huh?" << endl;
+    card playerCardA, playerCardB, dealerCardA;
+    { //Replace this with CV stuff
+      card playerCardA = getRandomCard();
+      card playerCardB = getRandomCard();
+      card dealerCardA = getRandomCard();
+    }
+
+    gamestate g;
+    { //construct the gamestate
+      stack playerCards;
+      playerCards.push_back(joseph.seeCard(playerCardA));
+      playerCards.push_back(joseph.seeCard(playerCardB));
+      g.perceivedStacks.push_back(playerCards);
+      g.dealersPerceivedCards.push_back(joseph.seeCard(dealerCardA));
+    }
+    
+    action doThis;
+    { //Get action like this
+      doThis = joseph.getAction(g, 0);
+    }
+    PRINT(getActionName(doThis));
+
+    int betThis;
+    { //Get a bet like this
+      betThis = joseph.getBet();
+    }
+    PRINT(betThis);
+      
+
+  }
+
+  
+
+  
+
+
+}
