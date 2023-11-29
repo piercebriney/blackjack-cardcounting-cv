@@ -144,7 +144,6 @@ void YOLOv8::make_pipe(bool warmup)
             }
             this->infer();
         }
-        printf("model warmup 10 times\n");
     }
 }
 

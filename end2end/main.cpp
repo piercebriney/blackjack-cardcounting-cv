@@ -6,7 +6,7 @@
 #include "bridge.h"
 #include "timer.h"
 
-int _main(int argc, char** argv) {
+int main(int argc, char** argv) {
     cudaSetDevice(0);
 
     ASSERT(argc == 5);
@@ -22,8 +22,6 @@ int _main(int argc, char** argv) {
     YOLOv8 yolov8{engine_file_path, SIZE};
     yolov8.make_pipe(true);
 
-    std::cout << "YOLOv8 engine warmed up!\n";
-
     cv::Mat image;
     std::vector<Object> objs;
 
@@ -32,8 +30,6 @@ int _main(int argc, char** argv) {
     cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
     cv::VideoCapture cap{video_source};
     ASSERT(cap.isOpened());
-
-    std::cout << "Video feed connected!\n";
 
     Game g;
     int seen_nothing_ms = 0;
@@ -64,7 +60,7 @@ int _main(int argc, char** argv) {
         // printf("read %d process %d\n", read_ms, process_ms);
         // printf("seen nothing for %d ms\n", seen_nothing_ms);
         if (seen_nothing_ms > 1000 && g.is_actionable()) {
-            puts("CLEAR\n");
+            puts("CLEAR");
             seen_nothing_ms = 0;
             int bet_value = g.p.getBet();
             printf("BET $%d\n", bet_value);
@@ -74,7 +70,7 @@ int _main(int argc, char** argv) {
         }
 
         if (bridge.should_reset()) {
-            // full reset
+            puts("FULL RESET");
             fp.clear();
             g.reset_shoe();
         }
@@ -86,8 +82,4 @@ int _main(int argc, char** argv) {
 
     cv::destroyAllWindows();
     return 0;
-}
-
-int main(int argc, char** argv) {
-    _main(argc, argv);
 }
