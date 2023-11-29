@@ -66,7 +66,7 @@ int player::getBet() {
 
   trueCount = runningCount / decksRemaining;
 
-  //cout << "RC: " << runningCount << endl;
+  cout << "RC: " << runningCount << endl;
   cout << "TC: " << trueCount << endl;
   cout << "Total counted: " << cardsCounted << endl;
 

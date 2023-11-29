@@ -7,7 +7,7 @@
 
 inline void adios(bool cond, const char* s, int line) {
     if (!cond) {
-        std::cout << s << " failed on line" << line << std::endl;
+        std::cout << s << " failed on line " << line << std::endl;
         exit(1);
     }
 }

@@ -36,19 +36,34 @@ struct Game {
         g.dealersPerceivedCards.clear();
         g.dealersCards.clear();
     }
+    bool empty() {
+        return g.dealersCards.empty() && g.stacks[0].empty();
+    }
     bool is_actionable() {
-        return g.perceivedStacks[0].size() >= 2;
+        return g.perceivedStacks[0].size() >= 2 && g.dealersCards.size() == 1;
     }
     void process(FrameProcessor& fp, Bridge& b) {
         fp.dealer_ticks.extract([&](int label) {
             card c = LABEL_TO_CARD[label];
             observe_dealer(c);
+            auto s = getEffectiveCardName(c);
+            printf("DEALER: %s\n", s.data());
+            if (is_actionable()) {
+                action a = get_action();
+                auto s = getActionName(a);
+                printf("ACTION: %s\n", s.data());
+                b.send_action(a);
+            }
         });
         fp.player_ticks.extract([&](int label) {
             card c = LABEL_TO_CARD[label];
             observe_player(c);
+            auto s = getEffectiveCardName(c);
+            printf("PLAYER: %s\n", s.data());
             if (is_actionable()) {
                 action a = get_action();
+                auto s = getActionName(a);
+                printf("ACTION: %s\n", s.data());
                 b.send_action(a);
             }
         });
