@@ -83,7 +83,12 @@ int _main(int argc, char** argv) {
 
         if (seen_nothing_ms > 7000) {
             seen_nothing_ms = 0;
-            // bridge.send_multiplier(n);
+            int betValue = g.p.getBet();
+            if(betValue > G_MAXIMUM_BET / 2) {
+              bridge.send_multiplier(0);
+            } else {
+              bridge.send_multiplier(1);
+            }
         }
 
         if (bridge.should_reset()) {
