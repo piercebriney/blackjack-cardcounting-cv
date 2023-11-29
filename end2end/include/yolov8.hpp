@@ -10,7 +10,7 @@ using namespace det;
 
 bool in_top_half(const cv::Rect_<float>& r, int height) {
     int half = height / 2;
-    return r.y + half < height;
+    return (r.y + (r.height/2)) + half < height;
 }
 
 class YOLOv8 {
