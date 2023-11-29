@@ -106,6 +106,8 @@ struct Object {
     cv::Rect_<float> rect;
     int              label = 0;
     float            prob  = 0.0;
+    int tick = 1;
+    bool seen = false;
 };
 
 struct PreParam {

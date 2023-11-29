@@ -19,7 +19,7 @@ int _main(int argc, char** argv) {
 
     Bridge bridge{bridge_ip, bridge_port};
 
-    YOLOv8 yolov8{engine_file_path, size};
+    YOLOv8 yolov8{engine_file_path, SIZE};
     yolov8.make_pipe(true);
 
     std::cout << "YOLOv8 engine warmed up!\n";
@@ -27,7 +27,7 @@ int _main(int argc, char** argv) {
     cv::Mat image;
     std::vector<Object> objs;
 
-    FrameProcessor fp{size};
+    FrameProcessor fp;
 
     cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
     cv::VideoCapture cap{video_source};
@@ -61,20 +61,22 @@ int _main(int argc, char** argv) {
             seen_nothing_ms = 0;
         }
 
-        printf("read %d process %d\n", read_ms, process_ms);
+        // printf("read %d process %d\n", read_ms, process_ms);
         // printf("seen nothing for %d ms\n", seen_nothing_ms);
         if (seen_nothing_ms > 1000 && g.is_actionable()) {
-            printf("clearing!\n");
+            puts("CLEAR\n");
             seen_nothing_ms = 0;
-            int betValue = g.p.getBet();
-            printf("bet value %d\n", betValue);
-            bridge.send_multiplier(betValue > G_MAXIMUM_BET / 2);
+            int bet_value = g.p.getBet();
+            printf("BET $%d\n", bet_value);
+            bridge.send_multiplier(bet_value > G_MAXIMUM_BET / 2);
             fp.clear();
             g.reset_round();
         }
 
         if (bridge.should_reset()) {
             // full reset
+            fp.clear();
+            g.reset_shoe();
         }
 
         if (cv::waitKey(10) == 'q') {
