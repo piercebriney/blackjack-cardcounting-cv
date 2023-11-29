@@ -5,8 +5,8 @@
 #include "config.h"
 #pragma once
 
-constexpr int FRAME_THRESHOLD = 5;
-constexpr int FRAME_MAX = 10;
+constexpr int FRAME_THRESHOLD = 15;
+constexpr int FRAME_MAX = 20;
 
 struct Ticks {
     std::array<int, NUM_LABELS> ticks{};

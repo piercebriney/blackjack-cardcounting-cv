@@ -46,7 +46,7 @@ struct Game {
         fp.dealer_ticks.extract([&](int label) {
             card c = LABEL_TO_CARD[label];
             observe_dealer(c);
-            auto s = getEffectiveCardName(c);
+            auto s = getEffectiveCardName(getEffectiveCard(c));
             printf("DEALER: %s\n", s.data());
             if (is_actionable()) {
                 action a = get_action();
@@ -58,7 +58,7 @@ struct Game {
         fp.player_ticks.extract([&](int label) {
             card c = LABEL_TO_CARD[label];
             observe_player(c);
-            auto s = getEffectiveCardName(c);
+            auto s = getEffectiveCardName(getEffectiveCard(c));
             printf("PLAYER: %s\n", s.data());
             if (is_actionable()) {
                 action a = get_action();
