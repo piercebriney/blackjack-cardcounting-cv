@@ -36,19 +36,31 @@ struct Game {
         g.dealersPerceivedCards.clear();
         g.dealersCards.clear();
     }
+    void reset_shoe() {
+        reset_round();
+        p.resetAll();
+    }
+    bool empty() {
+        return g.dealersCards.empty() && g.stacks[0].empty();
+    }
     bool is_actionable() {
-        return g.perceivedStacks[0].size() >= 2;
+        return g.perceivedStacks[0].size() >= 2 && g.dealersCards.size() == 1;
     }
     void process(FrameProcessor& fp, Bridge& b) {
-        fp.dealer_ticks.extract([&](int label) {
-            card c = LABEL_TO_CARD[label];
-            observe_dealer(c);
-        });
-        fp.player_ticks.extract([&](int label) {
-            card c = LABEL_TO_CARD[label];
-            observe_player(c);
+        fp.extract([&](Object& o, bool dealer) {
+            card c = LABEL_TO_CARD[o.label];
+            const char* who = dealer ? "DEALER" : "PLAYER";
+            if (dealer) {
+                observe_dealer(c);
+            } else {
+                observe_player(c);
+            }
+            auto s = getEffectiveCardName(getEffectiveCard(c));
+            printf("%s: %s\n", who, s.data());
             if (is_actionable()) {
                 action a = get_action();
+                auto s = getActionName(a);
+                printf("ACTION: %s\n", s.data());
                 b.send_action(a);
             }
         });

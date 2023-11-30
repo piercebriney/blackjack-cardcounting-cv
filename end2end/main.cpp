@@ -6,25 +6,6 @@
 #include "bridge.h"
 #include "timer.h"
 
-#if 0
-constexpr int NUM_LABELS = 52;
-const std::vector<std::string> CLASS_NAMES = {"10C", "10D", "10H", "10S", "2C", "2D", "2H", "2S", "3C", "3D", "3H", "3S", "4C", "4D", "4H", "4S", "5C", "5D", "5H", "5S", "6C", "6D", "6H", "6S", "7C", "7D", "7H", "7S", "8C", "8D", "8H", "8S", "9C", "9D", "9H", "9S", "AC", "AD", "AH", "AS", "JC", "JD", "JH", "JS", "KC", "KD", "KH", "KS", "QC", "QD", "QH", "QS"};
-cv::Size size{640, 640};
-#endif
-
-void test_bridge(Bridge& bridge) {
-    std::string line;
-    while (true) {
-        std::getline(std::cin, line);
-        int x = std::stoi(line);
-        std::cout << "sending " << x << std::endl;
-        bridge.send_multiplier(x);
-        std::cout << "reset? " << bridge.should_reset() << std::endl;
-
-    }
-}
-
-// tcp://10.230.46.171:8888
 int _main(int argc, char** argv) {
     cudaSetDevice(0);
 
@@ -38,7 +19,7 @@ int _main(int argc, char** argv) {
 
     Bridge bridge{bridge_ip, bridge_port};
 
-    YOLOv8 yolov8{engine_file_path, size};
+    YOLOv8 yolov8{engine_file_path, SIZE};
     yolov8.make_pipe(true);
 
     std::cout << "YOLOv8 engine warmed up!\n";
@@ -46,9 +27,7 @@ int _main(int argc, char** argv) {
     cv::Mat image;
     std::vector<Object> objs;
 
-    FrameProcessor fp{size};
-
-    int seen_nothing_ms;
+    FrameProcessor fp;
 
     cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
     cv::VideoCapture cap{video_source};
@@ -57,6 +36,7 @@ int _main(int argc, char** argv) {
     std::cout << "Video feed connected!\n";
 
     Game g;
+    int seen_nothing_ms = 0;
 
     while (true) {
         t.reset();
@@ -81,18 +61,22 @@ int _main(int argc, char** argv) {
             seen_nothing_ms = 0;
         }
 
-        if (seen_nothing_ms > 7000) {
+        // printf("read %d process %d\n", read_ms, process_ms);
+        // printf("seen nothing for %d ms\n", seen_nothing_ms);
+        if (seen_nothing_ms > 1000 && g.is_actionable()) {
+            puts("CLEAR\n");
             seen_nothing_ms = 0;
-            int betValue = g.p.getBet();
-            if(betValue > G_MAXIMUM_BET / 2) {
-              bridge.send_multiplier(0);
-            } else {
-              bridge.send_multiplier(1);
-            }
+            int bet_value = g.p.getBet();
+            printf("BET $%d\n", bet_value);
+            bridge.send_multiplier(bet_value > G_MAXIMUM_BET / 2);
+            fp.clear();
+            g.reset_round();
         }
 
         if (bridge.should_reset()) {
             // full reset
+            fp.clear();
+            g.reset_shoe();
         }
 
         if (cv::waitKey(10) == 'q') {

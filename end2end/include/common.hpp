@@ -7,7 +7,7 @@
 
 inline void adios(bool cond, const char* s, int line) {
     if (!cond) {
-        std::cout << s << " failed on line" << line << std::endl;
+        std::cout << s << " failed on line " << line << std::endl;
         exit(1);
     }
 }
@@ -106,6 +106,8 @@ struct Object {
     cv::Rect_<float> rect;
     int              label = 0;
     float            prob  = 0.0;
+    int tick = 1;
+    bool seen = false;
 };
 
 struct PreParam {
