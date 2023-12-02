@@ -18,7 +18,8 @@ void shoe::addDeck() {
 }
 
 void shoe::shuffle() {
-  std::random_shuffle(contents.begin(), contents.end());
+  std::srand(std::time(0));
+  std::random_shuffle(contents.begin(), contents.end(), RNG());
 }
 
 void shoe::reset() {

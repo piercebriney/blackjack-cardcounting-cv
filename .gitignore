@@ -1,2 +1,4 @@
 build
 *.engine
+.vscode
+/simulator/out.exe

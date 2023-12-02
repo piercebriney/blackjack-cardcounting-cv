@@ -14,6 +14,8 @@ class analysis {
     public:
         analysis(c_matrix m);
         double getAverageProfit(int numTrials, int numRounds);
+        float calcStandDev(std::vector<float> profits);
+        void testEpsilons(std::string filestr);
 
 };
 

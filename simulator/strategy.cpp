@@ -25,7 +25,7 @@ string lookup(table table, string column, string row) {
     }
   }
   if(rowIndex == -1) {
-   cout << "Lookup-error with nonexistant row " << row << " and column " << column << endl;
+   //cout << "Lookup-error with nonexistant row " << row << " and column " << column << endl;
     return "error";
   }
 
@@ -36,7 +36,7 @@ string lookup(table table, string column, string row) {
     }
   }
   if(columnIndex == -1) {
-    cout << "Lookup-error with row " << row << " and nonexistant column " << column << endl;
+    //cout << "Lookup-error with row " << row << " and nonexistant column " << column << endl;
     return "error";
   }
 
@@ -81,7 +81,7 @@ action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
   //if the player just has an ace, must hit
   if(g.perceivedStacks[stackIndex].size() == 1) {
     if(getEffectiveCard(g.perceivedStacks[stackIndex][0]) == _A) {
-      cout << "" << endl;
+      //cout << "" << endl;
       return hit;
     } else {
       return hit; //this is only possible with flawed perception

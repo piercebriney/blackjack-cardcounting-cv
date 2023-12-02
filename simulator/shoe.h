@@ -4,6 +4,12 @@
 #include <vector>
 
 //a class meant to represet a shoe, or a machine containing multiple decks of cards
+
+struct RNG {
+  int operator() (int n) {
+        return std::rand() / (1.0 + RAND_MAX) * n;
+    }
+};
 class shoe {
   std::vector<card> contents;
 

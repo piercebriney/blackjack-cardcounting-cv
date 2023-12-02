@@ -43,7 +43,7 @@ int main() {
   c_matrix myMatrix = c_matrix(fileaddress);
 
   printf("Input matrix improvement coefficient (0->unchanged, 1->identity matrix):\n>");
-  int perfectness;
+  float perfectness;
   cin >> perfectness;
 
   myMatrix.perfectify(perfectness);
@@ -63,11 +63,11 @@ int main() {
   int lastBankroll = joseph.getBankroll();
   //!!! Finish main playing logic
   for(int i = 0; i < G_NUM_ROUNDS; i++){
-    cout << endl << "----------" << "Play round " << (i+1) << "/" << G_NUM_ROUNDS << " ----------" << endl;
+    //cout << endl << "----------" << "Play round " << (i+1) << "/" << G_NUM_ROUNDS << " ----------" << endl;
     if(myDealer.playRound(&joseph)) { cout << "Player went bankrupt." << endl; break;}
-    cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
+    //cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
     int change = joseph.getBankroll() - lastBankroll;
-    cout << "Change in bankroll: " << std::setprecision(100) << change << endl;
+    //cout << "Change in bankroll: " << std::setprecision(100) << change << endl;
     lastBankroll = joseph.getBankroll();
   }
 
@@ -78,7 +78,12 @@ int main() {
   cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
   
  analysis a(myMatrix);
- double x = a.getAverageProfit(100, G_NUM_ROUNDS);
- 
-
+ double x = a.getAverageProfit(10000, G_NUM_ROUNDS);
+ //a.getAverageProfit(20, G_NUM_ROUNDS);
+ //a.getAverageProfit(100, G_NUM_ROUNDS);
+ //a.getAverageProfit(250, G_NUM_ROUNDS);
+ //a.getAverageProfit(500, G_NUM_ROUNDS);
+ //a.getAverageProfit(750, G_NUM_ROUNDS);
+ //a.getAverageProfit(1000, G_NUM_ROUNDS);
+ //a.testEpsilons(fileaddress);
 }
