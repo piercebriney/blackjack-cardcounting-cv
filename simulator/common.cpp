@@ -11,7 +11,7 @@ void commonInit() {
   //counting-methods are defined in this order:
   // A 2 3 4 5 6 7 8 9 10
   vector<int> HiLo = {-1, 1, 1, 1, 1, 1, 0, 0, 0, -1}; //balanced
-  vector<int> HiOpt2 ={0, 1, 1, 2, 2, 1, 1, 0, 0, -2}; //balanced
+  vector<int> HiOpt2 = {0, 1, 1, 2, 2, 1, 1, 0, 0, -2}; //balanced
   g_countingMethods.push_back(HiLo);
   g_countingMethods.push_back(HiOpt2);
 }

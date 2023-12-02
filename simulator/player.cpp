@@ -13,7 +13,7 @@ card player::seeCard(card a) {
   cardsCounted++;
   vector<int>* thisCountingMethod;
   card perceivedCard = hisConfusionMatrix.perceive(a);
-  cout << "Perceived " << getCardName(a) << " as " << getCardName(perceivedCard) << endl;
+  //cout << "Perceived " << getCardName(a) << " as " << getCardName(perceivedCard) << endl;
   thisCountingMethod = &g_countingMethods[hisCountingMethod];
   runningCount += thisCountingMethod->at(getEffectiveCard(perceivedCard));
   return perceivedCard;
@@ -57,12 +57,12 @@ int player::getBet() {
   trueCount = runningCount / decksRemaining;
 
   //cout << "RC: " << runningCount << endl;
-  cout << "TC: " << trueCount << endl;
-  cout << "Total counted: " << cardsCounted << endl;
+  //cout << "TC: " << trueCount << endl;
+  //cout << "Total counted: " << cardsCounted << endl;
 
   //playeradvantage is negative if the trueCount is below 1
   if(trueCount <= 1) {
-    cout << "Player advantage: <0"  << endl;
+    //cout << "Player advantage: <0"  << endl;
     return G_MINIMUM_BET;
   } else {
     float playerAdvantage = (trueCount - 1)/200; //playeradvantage increases by 0.5% for every trueCount
@@ -70,7 +70,7 @@ int player::getBet() {
     float ret = playerAdvantage * bankroll;
     if(ret < G_MINIMUM_BET) {ret = G_MINIMUM_BET;}
     if(ret > G_MAXIMUM_BET) {ret = G_MAXIMUM_BET;}
-    cout << "Player advantage: " << playerAdvantage << endl;
+    //cout << "Player advantage: " << playerAdvantage << endl;
     return ret;
   }
 }
@@ -93,7 +93,7 @@ action player::getAction(gamestate g, int stackIndex) {
   //check for deviations
   action actionFromDeviations = getActionFromDeviations(g, stackIndex, trueCount);
   if(actionFromDeviations != voidaction) {
-    cout << "Player took a deviation from basic strategy." << endl;
+    //cout << "Player took a deviation from basic strategy." << endl;
     return actionFromDeviations;
   }
 
@@ -103,10 +103,10 @@ action player::getAction(gamestate g, int stackIndex) {
     return split;
   }else{
     if(shouldUseHardTotals(g, stackIndex)){
-      cout << "Player uses Hard Totals to decide." << endl;
+      //cout << "Player uses Hard Totals to decide." << endl;
       return getHardTotalsAction(g, stackIndex, trueCount);
     }else{
-      cout << "Player uses Soft Totals to decide" << endl;
+      //cout << "Player uses Soft Totals to decide" << endl;
       return getSoftTotalsAction(g, stackIndex, trueCount);
     }
   }
