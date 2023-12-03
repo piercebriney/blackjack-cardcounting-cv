@@ -99,7 +99,7 @@ action player::getAction(gamestate g, int stackIndex) {
 
   if(shouldPlayerSurrender(g, stackIndex)){
     return surrender;
-  }else if(g.stacks[stackIndex].size() == 2 && getEffectiveCard(g.stacks[stackIndex][0]) == getEffectiveCard(g.stacks[stackIndex][1]) && shouldPlayerSplit(g, stackIndex)){
+  }else if(g.stacks[stackIndex].size() == 2 && getEffectiveCard(g.stacks[stackIndex][0]) == getEffectiveCard(g.stacks[stackIndex][1]) && shouldPlayerSplit(g, stackIndex) && g.stacks.size() < 4){
     return split;
   }else{
     if(shouldUseHardTotals(g, stackIndex)){

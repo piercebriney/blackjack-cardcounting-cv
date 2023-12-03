@@ -1,6 +1,7 @@
 #include "analysis.h"
 #include <iostream>
 #include <cmath>
+#include <fstream>
 using namespace std;
 
 analysis::analysis(c_matrix mat){
@@ -35,6 +36,8 @@ double analysis::getAverageProfit(int numTrials, int numRounds){
     return totalProfit/numTrials;
 }
 
+
+
 float analysis::calcStandDev(vector<float> profits){
     float sum = 0.0;
     float mean = 0.0;
@@ -56,15 +59,25 @@ float analysis::calcStandDev(vector<float> profits){
 
 void analysis::testEpsilons(string filestr){
     vector<float> profits;
-    for(double i = 0; i <= 1.00; i += 0.05){
+    fstream fout;
+    fout.open("results/epstest.csv", ios::out | ios::app);
+    for(double i = 0; i <= 1.00; i += 0.1){
         c_matrix myMatrix = c_matrix(filestr);
         myMatrix.perfectify(i);
         player1.setConfusionMatrix(myMatrix);
-        float p = getAverageProfit(100, G_NUM_ROUNDS);
-        cout << "Average profit for matrix with epsilon " << i << " is " << p;
+        float p = getAverageProfit(1000, G_NUM_ROUNDS);
+        //cout << "Average profit for matrix with epsilon " << i << " is " << p;
+        fout << i << "," << p << "\n";
         profits.push_back(p);
     }
     for (int i = 0; i < profits.size(); i++){
         cout << profits[i] << endl;
+    }
+}
+
+void analysis::varyConfusionMatrices(vector<c_matrix> mats, int numTrials, int numRounds){
+    for(int i = 0; i < mats.size(); i++){
+        player1.setConfusionMatrix(mats[i]);
+        int x = getAverageProfit(numTrials, numRounds);
     }
 }
