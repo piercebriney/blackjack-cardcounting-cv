@@ -82,7 +82,7 @@ string lookup(table table, string column, string row, string tableName) {
   return "error";
 }
 
-action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
+action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   int playerSum = 0;
   for(auto c : g.perceivedStacks[stackIndex]) {
     playerSum+=getEffectiveCardValue(getEffectiveCard(c));
@@ -115,7 +115,7 @@ action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
   return stay;
 }
 
-action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
+action getSoftTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   //if the player just has an ace, must hit
   if(g.perceivedStacks[stackIndex].size() == 1) {
     if(getEffectiveCard(g.perceivedStacks[stackIndex][0]) == _A) {
@@ -167,7 +167,7 @@ action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
   return stay;
 }
 
-bool shouldPlayerSplit(gamestate g, int stackIndex) {
+bool shouldPlayerSplit(gamestate& g, int stackIndex) {
   if(g.stacks[stackIndex].size() != 2) {
     throw std::invalid_argument("getSplitAction() called but the stack doesn't have exactly two cards.");
   }
@@ -187,7 +187,7 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
   }
 }
 
-bool shouldUseHardTotals(gamestate g, int stackIndex){
+bool shouldUseHardTotals(gamestate& g, int stackIndex){
   bool shouldHardTotal = true;
   for(int i = 0; i < g.perceivedStacks[stackIndex].size(); i++) {
     if(getEffectiveCard(g.perceivedStacks[stackIndex][i]) == _A) {
@@ -197,7 +197,7 @@ bool shouldUseHardTotals(gamestate g, int stackIndex){
   return shouldHardTotal;
 }
 
-bool shouldPlayerSurrender(gamestate g, int stackIndex) {
+bool shouldPlayerSurrender(gamestate& g, int stackIndex) {
   int playerSum = 0;
   for(auto n : g.stacks[stackIndex]) {
     playerSum+=getEffectiveCardValue(getEffectiveCard(n));
@@ -221,7 +221,7 @@ bool shouldPlayerInsure(float trueCount) {
   return (trueCount > 3);
 }
 
-action getActionFromDeviations(gamestate g, int stackIndex, float trueCount) {
+action getActionFromDeviations(gamestate& g, int stackIndex, float trueCount) {
   
   for(deviation d : g_illustrious_18) {
     if(  

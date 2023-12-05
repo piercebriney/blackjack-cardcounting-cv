@@ -22,20 +22,20 @@ std::string lookup(table table, std::string column, std::string row, std::string
 
 void loadStrategy();
 
-action getHardTotalsAction(gamestate g, int stackIndex, float trueCount);
+action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount);
 
-action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount);
+action getSoftTotalsAction(gamestate& g, int stackIndex, float trueCount);
 
-bool shouldPlayerSurrender(gamestate g, int stackIndex);
+bool shouldPlayerSurrender(gamestate& g, int stackIndex);
 
 bool shouldPlayerInsure(float trueCount);
 
-bool shouldPlayerSplit(gamestate g, int stackIndex);
+bool shouldPlayerSplit(gamestate& g, int stackIndex);
 
 bool shouldPlayerTakeInsurance(float trueCount);
 
-bool shouldUseHardTotals(gamestate g, int stackIndex);
+bool shouldUseHardTotals(gamestate& g, int stackIndex);
 
-action getActionFromDeviations(gamestate g, int stackIndex, float trueCount);
+action getActionFromDeviations(gamestate& g, int stackIndex, float trueCount);
 
 #endif
