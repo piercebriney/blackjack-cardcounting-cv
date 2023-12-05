@@ -1,2 +1,2 @@
 #!/bin/sh
-echo "\n\nmockup.csv\n1\n" | ./simulator
+echo "0\nmockup.csv\n1\n" | ./simulator

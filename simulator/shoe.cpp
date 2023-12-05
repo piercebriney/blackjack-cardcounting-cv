@@ -41,6 +41,10 @@ void shoe::testBalancedCounting() {
 }
 
 card shoe::drawCard() {
+  if (contents.size() == 0) {
+    cout << "EMPTY CONTENTS\n";
+    abort();
+  }
   card ret = contents.back();
   contents.pop_back();
   return ret;

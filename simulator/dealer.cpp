@@ -14,7 +14,7 @@ dealer::dealer(shoe myShoe){
   setShoe(myShoe);
 }
 
-int dealer::playRound(player* p, Rng& rng) {
+int dealer::playRound(player* p, Rng& rng, bool v) {
   gamestate g;
 
   //shuffle the decks if we have too few cards to play with
@@ -100,17 +100,23 @@ int dealer::playRound(player* p, Rng& rng) {
   for(int i = 0; i < g.stacks.size(); i++) {
     bool handOver = false;
     while(!handOver){
-      //cout << "Player Cards are: ";
-      //printPlayerCards(g, i);
+      if (v) {
+      cout << "Player Cards are: ";
+      printPlayerCards(g, i);
+      }
       action playerAction = p->getAction(g, i);
       if(playerAction == surrender){
-        //cout << "Player surrenders:" << endl; 
+        if(v) {
+        cout << "Player surrenders:" << endl; 
+        }
         g.actions[i] = surrender;
         p->getMoney(playerBet/2);
         handOver = true;
         
       }else if(playerAction == split){
-        //cout << "Player splits:" << endl; 
+        if (v) {
+        cout << "Player splits:" << endl; 
+        }
         p->loseMoney(playerBet);
         vector<card> stackFromSplit;
         vector<card> perceivedStackFromSplit;
@@ -123,16 +129,22 @@ int dealer::playRound(player* p, Rng& rng) {
         g.perceivedStacks.push_back(perceivedStackFromSplit);
         g.actions.push_back(hit);
       }else if(playerAction == hit){
-        //cout << "Player hits" << endl; 
+        if (v) {
+        cout << "Player hits" << endl; 
+        }
         card newCard = herShoe.drawCard();
         g.perceivedStacks[i].push_back(p->seeCard(newCard, rng));
         g.stacks[i].push_back(newCard);
       }else if(playerAction == stay){
-        //cout << "Player stands" << endl;
+        if (v) {
+        cout << "Player stands" << endl;
+        }
         handOver = true;
         g.actions[i] = stay;
       }else if(playerAction == doubledown) {
-        //cout << "Player doubles down" << endl;
+        if (v) {
+        cout << "Player doubles down" << endl;
+        }
         card newCard = herShoe.drawCard();
         p->seeCard(newCard, rng);
         g.perceivedStacks[i].push_back(p->seeCard(newCard, rng));

@@ -15,12 +15,13 @@ double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
     float totalProfit = 0;
     vector<float> profits;
     for(int t = 0; t < numTrials; t++){
+        // cout << "TRIAL " << t << '\n';
         player1.resetAll();
         shoe1.reset(rng);
         int initialBankRoll = player1.getBankroll();
         //cout << "Initial Bankroll: " << initialBankRoll << endl;
         for(int i = 0; i < numRounds; i++){
-            dealer1.playRound(&player1, rng);
+            dealer1.playRound(&player1, rng, t == 8451 && i == 708);
         }
         float p = player1.getBankroll() - initialBankRoll;
         //cout << "After bankroll: " << player1.getBankroll() << endl;

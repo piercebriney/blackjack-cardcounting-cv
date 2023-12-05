@@ -64,7 +64,7 @@ int main() {
   //!!! Finish main playing logic
   for(int i = 0; i < G_NUM_ROUNDS; i++){
     //cout << endl << "----------" << "Play round " << (i+1) << "/" << G_NUM_ROUNDS << " ----------" << endl;
-    if(myDealer.playRound(&joseph, rng)) { cout << "Player went bankrupt." << endl; break;}
+    if(myDealer.playRound(&joseph, rng, false)) { cout << "Player went bankrupt." << endl; break;}
     //cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
     int change = joseph.getBankroll() - lastBankroll;
     //cout << "Change in bankroll: " << std::setprecision(100) << change << endl;

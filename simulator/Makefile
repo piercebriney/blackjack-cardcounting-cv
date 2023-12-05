@@ -1,2 +1,2 @@
 all:
-	g++ *.cpp -o simulator -O3 -std=c++17
+	g++ *.cpp -O3 -o simulator -std=c++17 -g

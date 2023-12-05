@@ -13,7 +13,7 @@ class dealer {
   public:
     dealer();
     dealer(shoe myShoe);
-    int playRound(player* a, Rng& rng);
+    int playRound(player* a, Rng& rng, bool v);
     void setShoe(shoe myShoe);
 };
 
