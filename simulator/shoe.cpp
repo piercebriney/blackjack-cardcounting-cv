@@ -17,16 +17,16 @@ void shoe::addDeck() {
   }
 }
 
-void shoe::shuffle() {
-  std::random_shuffle(contents.begin(), contents.end(), RNG());
+void shoe::shuffle(Rng& rng) {
+  std::random_shuffle(contents.begin(), contents.end(), rng);
 }
 
-void shoe::reset() {
+void shoe::reset(Rng& rng) {
   this->contents.clear();
   for(int i = 0; i < G_NUM_DECKS; i++) {
     this->addDeck();
   }
-  this->shuffle();
+  this->shuffle(rng);
 }
 
 void shoe::testBalancedCounting() {

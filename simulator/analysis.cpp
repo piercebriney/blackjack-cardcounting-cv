@@ -4,23 +4,23 @@
 #include <fstream>
 using namespace std;
 
-analysis::analysis(c_matrix mat){
+analysis::analysis(c_matrix mat, Rng& rng){
     player1.setCountingMethod(HiOpt2);
     player1.setConfusionMatrix(mat);
-    shoe1.reset();
+    shoe1.reset(rng);
     dealer1.setShoe(shoe1);
 }
 
-double analysis::getAverageProfit(int numTrials, int numRounds){
+double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
     float totalProfit = 0;
     vector<float> profits;
     for(int t = 0; t < numTrials; t++){
         player1.resetAll();
-        shoe1.reset();
+        shoe1.reset(rng);
         int initialBankRoll = player1.getBankroll();
         //cout << "Initial Bankroll: " << initialBankRoll << endl;
         for(int i = 0; i < numRounds; i++){
-            dealer1.playRound(&player1);
+            dealer1.playRound(&player1, rng);
         }
         float p = player1.getBankroll() - initialBankRoll;
         //cout << "After bankroll: " << player1.getBankroll() << endl;
@@ -57,7 +57,7 @@ float analysis::calcStandDev(vector<float> profits){
 
 }
 
-void analysis::testEpsilons(string filestr){
+void analysis::testEpsilons(string filestr, Rng& rng){
     vector<float> profits;
     fstream fout;
     fout.open("results/epstest.csv", ios::out | ios::app);
@@ -65,7 +65,7 @@ void analysis::testEpsilons(string filestr){
         c_matrix myMatrix = c_matrix(filestr);
         myMatrix.perfectify(i);
         player1.setConfusionMatrix(myMatrix);
-        float p = getAverageProfit(1000, G_NUM_ROUNDS);
+        float p = getAverageProfit(1000, G_NUM_ROUNDS, rng);
         //cout << "Average profit for matrix with epsilon " << i << " is " << p;
         fout << i << "," << p << "\n";
         profits.push_back(p);
@@ -75,9 +75,9 @@ void analysis::testEpsilons(string filestr){
     }
 }
 
-void analysis::varyConfusionMatrices(vector<c_matrix> mats, int numTrials, int numRounds){
+void analysis::varyConfusionMatrices(vector<c_matrix> mats, int numTrials, int numRounds, Rng& rng) {
     for(int i = 0; i < mats.size(); i++){
         player1.setConfusionMatrix(mats[i]);
-        int x = getAverageProfit(numTrials, numRounds);
+        int x = getAverageProfit(numTrials, numRounds, rng);
     }
 }

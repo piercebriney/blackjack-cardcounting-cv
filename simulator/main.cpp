@@ -8,6 +8,7 @@
 #include "strategy.h"
 #include "dealer.h"
 #include <iomanip>
+#include <random>
 using namespace std;
 
 
@@ -16,18 +17,17 @@ void loadMatrixFromFile(string fileaddress) {
 }
 
 int main() {
-  //srand(time(0));
-  
   cout << "Input seed:\n>";
   string seedSTR;
   getline(cin, seedSTR);
+  Rng rng;
   if(seedSTR.size() == 0) {
-    int seed = time(0);
-    cout << "Using seed " << seed << "." << endl;
-    srand(time(0));
+    pcg_extras::seed_seq_from<std::random_device> seed_source;
+    rng = Rng{seed_source};
+    cout << "Using randomized initial state " << rng << endl;
   } else {
     cout << "Using seed " << seedSTR << "." << endl;
-    srand(stoi(seedSTR));
+    rng = Rng{(__int128 unsigned)stoi(seedSTR)};
   }
 
   commonInit();
@@ -54,7 +54,7 @@ int main() {
   
   //Creates shoe, fills shoe with cards, and shuffles deck
   shoe myShoe;
-  myShoe.reset();
+  myShoe.reset(rng);
 
   //Creates dealer object and set the shoe to the one made previously
   dealer myDealer;
@@ -64,7 +64,7 @@ int main() {
   //!!! Finish main playing logic
   for(int i = 0; i < G_NUM_ROUNDS; i++){
     //cout << endl << "----------" << "Play round " << (i+1) << "/" << G_NUM_ROUNDS << " ----------" << endl;
-    if(myDealer.playRound(&joseph)) { cout << "Player went bankrupt." << endl; break;}
+    if(myDealer.playRound(&joseph, rng)) { cout << "Player went bankrupt." << endl; break;}
     //cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
     int change = joseph.getBankroll() - lastBankroll;
     //cout << "Change in bankroll: " << std::setprecision(100) << change << endl;
@@ -77,8 +77,8 @@ int main() {
   int hourlyWage = profit / (G_NUM_ROUNDS / G_NUM_ROUNDS_PER_HOUR);
   cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
   
- analysis a(myMatrix);
- //double x = a.getAverageProfit(100, G_NUM_ROUNDS);
+ analysis a{myMatrix, rng};
+ double x = a.getAverageProfit(10000, G_NUM_ROUNDS, rng);
  //a.testEpsilons(fileaddress);
  //a.getAverageProfit(20, G_NUM_ROUNDS);
  //a.getAverageProfit(100, G_NUM_ROUNDS);

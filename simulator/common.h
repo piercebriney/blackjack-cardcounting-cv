@@ -3,7 +3,10 @@
 #include "params.h"
 #include <vector>
 #include <string>
+#include "pcg_random.hpp"
 
+    
+typedef pcg64_fast Rng;
 // print value
 #define PRINT(a)                          \
 {                                         \

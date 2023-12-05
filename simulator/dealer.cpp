@@ -14,12 +14,12 @@ dealer::dealer(shoe myShoe){
   setShoe(myShoe);
 }
 
-int dealer::playRound(player* p) {
+int dealer::playRound(player* p, Rng& rng) {
   gamestate g;
 
   //shuffle the decks if we have too few cards to play with
   if(herShoe.getCardsLeftInShoe() < G_MINIMUM_CARDS_IN_SHOE) {
-    herShoe.reset();
+    herShoe.reset(rng);
     p->resetCount();
   }
   //bets are taken before dealing cards
@@ -38,15 +38,15 @@ int dealer::playRound(player* p) {
   initCards.push_back(a);
   initCards.push_back(b);
 
-  initPerceivedCards.push_back(p->seeCard(a));
-  initPerceivedCards.push_back(p->seeCard(b));
+  initPerceivedCards.push_back(p->seeCard(a, rng));
+  initPerceivedCards.push_back(p->seeCard(b, rng));
 
   g.stacks.push_back(initCards);
   g.perceivedStacks.push_back(initPerceivedCards);
   g.actions.push_back(hit);
   g.dealersCards.push_back(c);
   g.dealersCards.push_back(d);
-  g.dealersPerceivedCards.push_back(p->seeCard(c));
+  g.dealersPerceivedCards.push_back(p->seeCard(c, rng));
 
 
   bool tookInsurance = 0;
@@ -117,7 +117,7 @@ int dealer::playRound(player* p) {
         card splitCard = g.stacks[i][0];
         card newCard = herShoe.drawCard();
         g.stacks[i][0] = newCard;
-        g.perceivedStacks[i][0] = p->seeCard(newCard);
+        g.perceivedStacks[i][0] = p->seeCard(newCard, rng);
         stackFromSplit.push_back(splitCard);
         g.stacks.push_back(stackFromSplit);
         g.perceivedStacks.push_back(perceivedStackFromSplit);
@@ -125,7 +125,7 @@ int dealer::playRound(player* p) {
       }else if(playerAction == hit){
         //cout << "Player hits" << endl; 
         card newCard = herShoe.drawCard();
-        g.perceivedStacks[i].push_back(p->seeCard(newCard));
+        g.perceivedStacks[i].push_back(p->seeCard(newCard, rng));
         g.stacks[i].push_back(newCard);
       }else if(playerAction == stay){
         //cout << "Player stands" << endl;
@@ -134,8 +134,8 @@ int dealer::playRound(player* p) {
       }else if(playerAction == doubledown) {
         //cout << "Player doubles down" << endl;
         card newCard = herShoe.drawCard();
-        p->seeCard(newCard);
-        g.perceivedStacks[i].push_back(p->seeCard(newCard));
+        p->seeCard(newCard, rng);
+        g.perceivedStacks[i].push_back(p->seeCard(newCard, rng));
         g.stacks[i].push_back(newCard);
         handOver = true;
         p->loseMoney(playerBet);
@@ -218,7 +218,7 @@ int dealer::playRound(player* p) {
     }
   }
 
-  p->seeCard(d);
+  p->seeCard(d, rng);
 
   //if the player doesn't have enough money to keep playing, kick them out
   if(p->getBankroll() < G_MINIMUM_BET) {

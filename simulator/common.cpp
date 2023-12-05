@@ -265,10 +265,6 @@ int getIdealCount(stack s) {
   return validTotal;
 }
 
-card getRandomCard() {
-  return (card)(rand() % 52);
-}
-
 bool areStacksEqual(stack a, stack b) {
   sort(a.begin(), a.end());
   sort(b.begin(), b.end());

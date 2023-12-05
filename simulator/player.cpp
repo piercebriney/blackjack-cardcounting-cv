@@ -9,10 +9,10 @@ player::player(){
 
 }
 
-card player::seeCard(card a) {
+card player::seeCard(card a, Rng& rng) {
   cardsCounted++;
   vector<int>* thisCountingMethod;
-  card perceivedCard = hisConfusionMatrix.perceive(a);
+  card perceivedCard = hisConfusionMatrix.perceive(a, rng);
   //cout << "Perceived " << getCardName(a) << " as " << getCardName(perceivedCard) << endl;
   thisCountingMethod = &g_countingMethods[hisCountingMethod];
   runningCount += thisCountingMethod->at(getEffectiveCard(perceivedCard));
@@ -132,6 +132,6 @@ void player::setConfusionMatrix(c_matrix a) {
   hisConfusionMatrix = a;
 }
 
-card player::perceive(card real) {
-  return hisConfusionMatrix.perceive(real);
+card player::perceive(card real, Rng& rng) {
+  return hisConfusionMatrix.perceive(real, rng);
 }

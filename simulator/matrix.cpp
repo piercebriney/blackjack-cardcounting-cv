@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include "matrix.h"
+#include <random>
 
 using namespace std;
 
@@ -94,8 +95,9 @@ c_matrix::c_matrix(string fileaddress) {
   cout << "Confusion matrix loaded successfully" << endl;
 }
 
-card c_matrix::perceive(card real) {
-  float randomness = ( (double) rand() / RAND_MAX );
+card c_matrix::perceive(card real, Rng& rng) {
+  std::uniform_real_distribution<double> d(0.0,1.0);
+  float randomness = d(rng);
   float sumOfOdds = 0;
   //cout << "Randomness is " << randomness << endl;
 
@@ -137,10 +139,11 @@ int c_matrix::perceptionTest(card real) {
   string realName = getCardName(real);
   float totalTrials = 500;
   float totalRight = 0;
+  Rng rng;
   //cout << "Perceptions for " << realName <<  ":" << endl;
 
   for(int i = 0; i < totalTrials; i++) {
-    string perceivedName = getCardName(perceive(real));
+    string perceivedName = getCardName(perceive(real, rng));
     //cout << perceivedName << endl;
     if(perceivedName == realName) {
       totalRight ++;
