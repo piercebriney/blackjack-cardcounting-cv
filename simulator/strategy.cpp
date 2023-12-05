@@ -232,12 +232,18 @@ action getActionFromDeviations(gamestate g, int stackIndex, float trueCount) {
 
       if(d.useHandNotTotal) {
         if(areStacksEffectivelyEqual(g.perceivedStacks[stackIndex], d.hand) && d.dealerUpCard == getEffectiveCard(g.dealersPerceivedCards[0])) {
+          if(d.result == split && g.stacks.size() >= 4){
+            return stay;
+          }
           return d.result;
         }
   
       } else {
         int sum = getLowSumOfStack(g.perceivedStacks[stackIndex]);
         if(sum == d.total && d.dealerUpCard == getEffectiveCard(g.dealersCards[0])) { 
+          if(d.result == split && g.stacks.size() >= 4){
+            return stay;
+          }
           return d.result;
 
         }
