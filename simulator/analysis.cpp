@@ -4,7 +4,7 @@
 #include <fstream>
 using namespace std;
 
-analysis::analysis(c_matrix mat, Rng& rng){
+analysis::analysis(c_matrix& mat, Rng& rng){
     player1.setCountingMethod(HiOpt2);
     player1.setConfusionMatrix(mat);
     shoe1.reset(rng);
@@ -21,7 +21,7 @@ double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
         int initialBankRoll = player1.getBankroll();
         //cout << "Initial Bankroll: " << initialBankRoll << endl;
         for(int i = 0; i < numRounds; i++){
-            dealer1.playRound(&player1, rng, t == 8451 && i == 708);
+            dealer1.playRound(&player1, rng, false);
         }
         float p = player1.getBankroll() - initialBankRoll;
         //cout << "After bankroll: " << player1.getBankroll() << endl;
@@ -39,7 +39,7 @@ double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
 
 
 
-float analysis::calcStandDev(vector<float> profits){
+float analysis::calcStandDev(vector<float>& profits){
     float sum = 0.0;
     float mean = 0.0;
     float variance = 0.0;
@@ -76,7 +76,7 @@ void analysis::testEpsilons(string filestr, Rng& rng){
     }
 }
 
-void analysis::varyConfusionMatrices(vector<c_matrix> mats, int numTrials, int numRounds, Rng& rng) {
+void analysis::varyConfusionMatrices(vector<c_matrix>& mats, int numTrials, int numRounds, Rng& rng) {
     for(int i = 0; i < mats.size(); i++){
         player1.setConfusionMatrix(mats[i]);
         int x = getAverageProfit(numTrials, numRounds, rng);

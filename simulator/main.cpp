@@ -19,12 +19,12 @@ void loadMatrixFromFile(string fileaddress) {
 int main() {
   cout << "Input seed:\n>";
   string seedSTR;
-  getline(cin, seedSTR);
-  Rng rng;
+  // getline(cin, seedSTR);
+  Rng rng{0};
   if(seedSTR.size() == 0) {
-    pcg_extras::seed_seq_from<std::random_device> seed_source;
-    rng = Rng{seed_source};
-    cout << "Using randomized initial state " << rng << endl;
+    // pcg_extras::seed_seq_from<std::random_device> seed_source;
+    // rng = Rng{seed_source};
+    // cout << "Using randomized initial state " << rng << endl;
   } else {
     cout << "Using seed " << seedSTR << "." << endl;
     rng = Rng{(__int128 unsigned)stoi(seedSTR)};
@@ -35,16 +35,16 @@ int main() {
 
   printf("Input name of c_matrix:\n>");
   
-  string input;
-  cin >> input;
+  string input{"mockup.csv"};
+  // cin >> input;
 
   string fileaddress = "matrix/" + input + ".csv";
 
   c_matrix myMatrix = c_matrix(fileaddress);
 
   printf("Input matrix improvement coefficient (0->unchanged, 1->identity matrix):\n>");
-  float perfectness;
-  cin >> perfectness;
+  float perfectness = 1.0;
+  // cin >> perfectness;
 
   myMatrix.perfectify(perfectness);
 

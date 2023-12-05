@@ -20,7 +20,7 @@ mp g_lateSurrenderMap;
 
 vector<deviation> g_illustrious_18;
 
-string lookup(mp& m, string column, string row) {
+string lookup(mp& m, string& column, string& row) {
     auto it = m.find(row+column);
     if (it != g_hardTotalsMap.end()) {
         return it->second;
@@ -177,7 +177,7 @@ action getActionFromDeviations(gamestate& g, int stackIndex, float trueCount) {
         ) {
 
       if(d.useHandNotTotal) {
-        if(areStacksEffectivelyEqual(g.perceivedStacks[stackIndex], d.hand) && d.dealerUpCard == getEffectiveCard(g.dealersPerceivedCards[0])) {
+        if(d.dealerUpCard == getEffectiveCard(g.dealersPerceivedCards[0]) && areStacksEffectivelyEqual(g.perceivedStacks[stackIndex], d.hand)) {
           if(d.result == split && g.stacks.size() >= 4){
             return stay;
           }

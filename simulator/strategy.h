@@ -18,8 +18,6 @@ extern mp g_pairSplittingMap;
 extern mp g_lateSurrenderMap;
 extern std::vector<deviation> g_illustrious_18;
 
-std::string lookup(table table, std::string column, std::string row, std::string tableName);
-
 void loadStrategy();
 
 action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount);

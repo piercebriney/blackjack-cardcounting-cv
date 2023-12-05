@@ -21,15 +21,15 @@ public:
   card seeCard(card a, Rng& rng);
   void resetCount();
   int getBet();
-  action getBasicStrategyAction(gamestate a);
-  action getAction(gamestate g, int stackIndex); //for a stack in a gamestate, will he hit, stay, surrender, etc.
+  action getBasicStrategyAction(gamestate& a);
+  action getAction(gamestate& g, int stackIndex); //for a stack in a gamestate, will he hit, stay, surrender, etc.
   bool takesInsurance();
   float getTrueCount();
   float getBankroll();
   void getMoney(float a);
   void loseMoney(float a);
   void setCountingMethod(countingMethod a);
-  void setConfusionMatrix(c_matrix a);
+  void setConfusionMatrix(c_matrix& a);
   void resetAll();
 
   card perceive(card real, Rng& rng);

@@ -96,7 +96,7 @@ c_matrix::c_matrix(string fileaddress) {
 }
 
 card c_matrix::perceive(card real, Rng& rng) {
-  std::uniform_real_distribution<double> d(0.0,1.0);
+  std::uniform_real_distribution<float> d(0.0,1.0);
   float randomness = d(rng);
   float sumOfOdds = 0;
   //cout << "Randomness is " << randomness << endl;

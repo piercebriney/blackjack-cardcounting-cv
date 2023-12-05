@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "pcg_random.hpp"
+#include <array>
 
     
 typedef pcg64_fast Rng;
@@ -22,7 +23,7 @@ enum effectiveCard {_A, _2, _3, _4, _5, _6, _7, _8, _9, _T};
 
 enum action {hit, stay, split, doubledown, surrender, voidaction};
 
-extern std::vector<std::vector<int>>g_countingMethods;
+extern std::vector<std::array<int, 10>>g_countingMethods;
 
 enum countingMethod {HiLo, HiOpt2};
 
@@ -61,21 +62,21 @@ struct deviation {
   bool activeLessThan = 0; //activate if it's tc is less than index
 };
 
-void printPlayerCards(gamestate g, int stackIndex);
+void printPlayerCards(gamestate& g, int stackIndex);
 
-void printStack(stack s);
+void printStack(stack& s);
 
 bool isBlackjack(card a, card b);
 
-bool areStacksEqual(stack a, stack b);
+bool areStacksEqual(stack& a, stack& b);
 
-bool areStacksEffectivelyEqual(stack a, stack b);
+bool areStacksEffectivelyEqual(stack& a, stack& b);
 
 //count cards so that they are as high as possible without going over 21
-int getIdealCount(stack s);
+int getIdealCount(stack& s);
 
 card getRandomCard();
 
-int getLowSumOfStack(stack a);
+int getLowSumOfStack(stack& a);
 
 #endif
