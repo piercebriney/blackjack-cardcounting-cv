@@ -20,68 +20,14 @@ mp g_lateSurrenderMap;
 
 vector<deviation> g_illustrious_18;
 
-string lookup(table table, string column, string row, string tableName) {
-  
-  //int rowIndex = -1; int columnIndex = -1;
-
-  if(tableName == "hardTotalsTable"){
-    if(g_hardTotalsMap.find(row+column) == g_hardTotalsMap.end()){
-      //cout << "hardtotal error on row" << row << " and column " << column << endl;
-      return "error";
-    }else{
-      return g_hardTotalsMap[row+column];
+string lookup(mp& m, string column, string row) {
+    auto it = m.find(row+column);
+    if (it != g_hardTotalsMap.end()) {
+        return it->second;
+    } else {
+        return "error";
     }
-  }
-  if(tableName == "softTotalsTable"){
-    if(g_softTotalsMap.find(row+column) == g_softTotalsMap.end()){
-      //cout << "softTotal error on row " << row << " and column " << column << endl;
-      return "error";
-    }else{
-      return g_softTotalsMap[row+column];
-    }
-  }
-  if(tableName == "pairSplittingTable"){
-    if(g_pairSplittingMap.find(row+column) == g_pairSplittingMap.end()){
-      //cout << "pairSplitting error on row " << row << " and column " << column << endl;
-      return "error";
-    }else{
-      return g_pairSplittingMap[row+column];
-    }
-  }
-  if(tableName == "lateSurrenderTable"){
-    if(g_lateSurrenderMap.find(row+column) == g_lateSurrenderMap.end()){
-      //cout << "lateSurrender error on row " << row << " and column " << column << endl;
-      return "error";
-    }else{
-      return g_lateSurrenderMap[row+column];
-    }
-  }
-
-  /*for(int i = 0; i < table.size(); i++) {
-    if(table[i][0] == row) {
-      rowIndex = i;
-      break;
-    }
-  }
-  if(rowIndex == -1) {
-   //cout << "Lookup-error with nonexistant row " << row << " and column " << column << endl;
-    return "error";
-  }
-
-  for(int i = 0; i < table[0].size(); i++) {
-    if(table[0][i] == column) {
-      columnIndex = i;
-      break;
-    }
-  }
-  if(columnIndex == -1) {
-    //cout << "Lookup-error with row " << row << " and nonexistant column " << column << endl;
-    return "error";
-  }*/
-
-  return "error";
 }
-
 action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   int playerSum = 0;
   for(auto c : g.perceivedStacks[stackIndex]) {
@@ -100,7 +46,7 @@ action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   row = to_string(playerSum);
   column = getEffectiveCardName(getEffectiveCard(dealerCard));
   //!!! add functionality for doubling down
-  string result = lookup(g_hardTotalsTable, column, row, "hardTotalsTable");
+  string result = lookup(g_hardTotalsMap, column, row);
   if(result == "S") {
     return stay;
   } else if (result == "H") {
@@ -144,7 +90,7 @@ action getSoftTotalsAction(gamestate& g, int stackIndex, float trueCount) {
 
   string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
   string row = to_string(nonAceTotal);
-  string result = lookup(g_softTotalsTable, column, row, "softTotalsTable");
+  string result = lookup(g_softTotalsMap, column, row);
 
   //!!! add functionality for doubling down
   if(result == "S") {
@@ -179,7 +125,7 @@ bool shouldPlayerSplit(gamestate& g, int stackIndex) {
 
   string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
   string row = getEffectiveCardName(getEffectiveCard(g.perceivedStacks[stackIndex][0]));
-  string result = lookup(g_pairSplittingTable, column, row, "pairSplittingTable");
+  string result = lookup(g_pairSplittingMap, column, row);
   if(result == "Y" || result == "Yn") {
     return 1;
   } else {
@@ -213,7 +159,7 @@ bool shouldPlayerSurrender(gamestate& g, int stackIndex) {
   string row = to_string(playerSum);
   string column = getEffectiveCardName(getEffectiveCard(dealerCard));
 
-  string result = lookup(g_lateSurrenderTable, column, row, "lateSurrenderTable");
+  string result = lookup(g_lateSurrenderMap, column, row);
   if(result == "Y") {return true;} else {return false;}
 }
 
