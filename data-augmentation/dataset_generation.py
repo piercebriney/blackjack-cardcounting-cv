@@ -21,6 +21,24 @@ class_id_mapping = {
     'k': 12
 }
 
+# At 1 foot: card is 850 pixels tall in 3024 resolution (iPhone 13)
+CARD_IMAGE_HEIGHT_RATIO = 850/3024
+# CV will resize to square aspect ratio, for accurate distance evaluation use square background
+# resize_from_distance will not resize card larger than background
+def resize_from_distance(background_image, card_image, desired_distance_in_feet):
+    new_card_image_height_ratio = 1 / desired_distance_in_feet * CARD_IMAGE_HEIGHT_RATIO
+
+    background_width, background_height = background_image.size
+    card_width, card_height = card_image.size
+
+    max_aspect_ratio = min(background_width / card_width, background_height / card_height) * 0.9 # only allow 90% fill of background
+    current_aspect_ratio = card_height / background_height
+    final_aspect_ratio = min(max_aspect_ratio, new_card_image_height_ratio / current_aspect_ratio)
+
+    new_size = (int(card_width * final_aspect_ratio), int(card_height * final_aspect_ratio))
+
+    return card_image.resize(new_size, Image.Resampling.LANCZOS)
+
 def resize(background_image, card_image):
     background_width, background_height = background_image.size
     card_width, card_height = card_image.size
