@@ -12,7 +12,7 @@ class player {
 
   int decks = G_NUM_DECKS;
   int bankroll = G_STARTING_BANKROLL;
-  countingMethod hisCountingMethod = HiOpt2;
+  countingMethod hisCountingMethod = HiLo;
 
   c_matrix hisConfusionMatrix;
 

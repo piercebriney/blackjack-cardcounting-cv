@@ -18,7 +18,6 @@ void shoe::addDeck() {
 }
 
 void shoe::shuffle() {
-  std::srand(std::time(0));
   std::random_shuffle(contents.begin(), contents.end(), RNG());
 }
 
@@ -34,7 +33,7 @@ void shoe::testBalancedCounting() {
   cout << "lets count " << endl;
   for(card a : contents) {
     PRINT(getCardName(a));
-    sum += getCountFromCard(a, HiOpt2);
+    sum += getCountFromCard(a, HiLo);
   }
   cout << "The final count is:" << endl;
   cout << sum << endl;

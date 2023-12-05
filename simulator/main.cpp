@@ -49,7 +49,7 @@ int main() {
   myMatrix.perfectify(perfectness);
 
   player joseph;
-  joseph.setCountingMethod(HiOpt2);
+  joseph.setCountingMethod(HiLo);
   joseph.setConfusionMatrix(myMatrix);
   
   //Creates shoe, fills shoe with cards, and shuffles deck
@@ -78,7 +78,8 @@ int main() {
   cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
   
  analysis a(myMatrix);
- double x = a.getAverageProfit(10000, G_NUM_ROUNDS);
+ //double x = a.getAverageProfit(100, G_NUM_ROUNDS);
+ //a.testEpsilons(fileaddress);
  //a.getAverageProfit(20, G_NUM_ROUNDS);
  //a.getAverageProfit(100, G_NUM_ROUNDS);
  //a.getAverageProfit(250, G_NUM_ROUNDS);
