@@ -21,6 +21,7 @@ class_id_mapping = {
     'k': 12
 }
 
+
 # At 1 foot: card is 850 pixels tall in 3024 resolution (iPhone 13)
 CARD_IMAGE_HEIGHT_RATIO = 850/3024
 # CV will resize to square aspect ratio, for accurate distance evaluation use square background
