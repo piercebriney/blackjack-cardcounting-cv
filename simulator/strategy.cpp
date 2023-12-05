@@ -22,7 +22,7 @@ vector<deviation> g_illustrious_18;
 
 string lookup(mp& m, string& column, string& row) {
     auto it = m.find(row+column);
-    if (it != g_hardTotalsMap.end()) {
+    if (it != m.end()) {
         return it->second;
     } else {
         return "error";
