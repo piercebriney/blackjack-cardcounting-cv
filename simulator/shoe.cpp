@@ -22,6 +22,7 @@ void shoe::shuffle() {
 }
 
 void shoe::reset() {
+  this->contents.clear();
   for(int i = 0; i < G_NUM_DECKS; i++) {
     this->addDeck();
   }
