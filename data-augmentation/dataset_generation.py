@@ -4,6 +4,7 @@ import numpy as np
 from multiprocessing import Pool
 import os
 import string
+import image_transformer
 
 class_id_mapping = {
     'a': 0,
@@ -231,12 +232,22 @@ def find_corners_parallel(image, num_processes=8):
         results = p.map(process_segment, segments)
 
     # Combine results from all segments
-    left = min(r[0] for r in results)
-    top = min(r[1] for r in results)
-    right = max(r[2] for r in results)
-    bottom = max(r[3] for r in results)
+    left = 10000000000
+    top = 10000000000
+    right = -1
+    bottom = -1
+    for r in results:
+        left = min(left, r[0])
+        top = min(top, r[1])
+        right = max(right, r[2])
+        bottom = max(bottom, r[3])
 
     return (left, top, right, bottom)
+
+def transform_from_angle(card_image, angle_deg):
+    transformer = image_transformer.ImageTransformer(card_image)
+
+    return Image.fromarray(transformer.rotate_along_axis(theta = -angle_deg))
 
 def transform_perspective(background_image, card_image, initial_width, initial_height):
     card_width, card_height = initial_width, initial_height
@@ -315,27 +326,27 @@ def card_occludes_other_cards(new_annotation, previous_annotations):
                 return True
     return False
 
-def generate_image(card_image_paths, background_image_path, output_card_path, annotation_path):
+def generate_image(card_image_paths, background_image_path, output_card_path, annotation_path, angle=None, distance=None):
     background_image = Image.open(background_image_path).convert("RGBA")
     background_width, background_height = background_image.size
 
     annotations_array = []
     for card_image_path in card_image_paths:
         card_image = Image.open(card_image_path).convert("RGBA")
-        card_image = resize(background_image, card_image)
-        card_image = rotate(card_image)
+        card_image = resize_from_distance(background_image, card_image, distance) if distance is not None else resize(background_image, card_image)
+        #card_image = rotate(card_image)
 
         initial_card_width, initial_card_height = card_image.size
 
         card_image = add_padding(background_image, card_image)
-        card_image = transform_perspective(background_image, card_image, initial_card_width, initial_card_height)
+        card_image = transform_from_angle(card_image, angle) if angle is not None else transform_perspective(background_image, card_image, initial_card_width, initial_card_height)
 
         annotation = None
         attempts = 0
         solution_found = False
         while (not solution_found and attempts < 5):
-            position_offset_x = random.randint(int(-0.3*background_width), int(0.3*background_width))
-            position_offset_y = random.randint(int(-0.3*background_height), int(0.3*background_height))
+            position_offset_x = 0 #random.randint(int(-0.3*background_width), int(0.3*background_width))
+            position_offset_y = 0 #random.randint(int(-0.3*background_height), int(0.3*background_height))
             annotation = get_annotation(card_image, str.split(str.split(card_image_path, '/')[-1], '_')[0], position_offset_x, position_offset_y)
             solution_found = not card_occludes_other_cards(annotation, annotations_array)
             attempts += 1
@@ -346,16 +357,16 @@ def generate_image(card_image_paths, background_image_path, output_card_path, an
     
     write_annotations(annotation_path, annotations_array)
 
-    background_image = add_random_tint(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = add_random_tint(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = modify_brightness(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = modify_contrast(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = modify_saturation(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = add_gaussian_noise(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = add_salt_and_pepper_noise(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = add_gaussian_blur(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = adjust_hue(background_image) if random.randint(0,1) == 1 else background_image
-    background_image = adjust_saturation(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = add_random_tint(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = add_random_tint(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = modify_brightness(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = modify_contrast(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = modify_saturation(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = add_gaussian_noise(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = add_salt_and_pepper_noise(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = add_gaussian_blur(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = adjust_hue(background_image) if random.randint(0,1) == 1 else background_image
+    #background_image = adjust_saturation(background_image) if random.randint(0,1) == 1 else background_image
     background_image = background_image.convert("RGB")
 
     background_image.save(output_card_path, 'JPEG')
@@ -364,36 +375,58 @@ def random_string(length=12):
     letters = string.ascii_letters + string.digits
     return ''.join(random.choice(letters) for _ in range(length))
 
+
+def make_directory(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        return
+    
+    for filename in os.listdir(directory):
+                file_path = os.path.join(directory, filename)
+                try:
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                except Exception as e:
+                    print(f'Failed to delete {file_path}. Reason: {e}')
+
+def generate_test_data():
+    cards_directory = 'iphone-deck'
+    background = 'black-bg.png'
+    output_image_directory = '../../../../Desktop/datasets/cards_2/images/test'
+    annotations_directory = '../../../../Desktop/datasets/cards_2/labels/test'
+    min_angle = 15
+    max_angle = 90
+    angle_step = 15
+    min_distance = 1
+    max_distance = 5
+    distance_step = 0.5
+
+    make_directory(output_image_directory)
+    make_directory(annotations_directory)
+
+    cards = [f for f in os.listdir(cards_directory) if os.path.isfile(os.path.join(cards_directory, f))]
+
+    generated = 0
+    for filename in os.listdir(cards_directory):
+        if os.path.isfile(os.path.join(cards_directory, filename)):
+            for angle in np.arange(min_angle, max_angle+angle_step, angle_step):
+                for distance in np.arange(min_distance, max_distance+distance_step, distance_step):
+                    input_card_paths = [f'{cards_directory}/{filename}']
+                    output_string = f'{str(distance)}_{str(angle)}_{random_string()}'
+                    output_card_path = f'{output_image_directory}/{output_string}.jpg'
+                    annotation_path = f'{annotations_directory}/{output_string}.txt'
+                    generate_image(input_card_paths, background, output_card_path, annotation_path, max_angle - angle, distance)
+                    generated += 1
+                    print(f'\rCompletion: {100 * (generated / (((max_angle-min_angle + angle_step)/angle_step)*((max_distance-min_distance + distance_step)/distance_step)*len(cards))):.2f}%', end='')
+
 def generate_dataset(num_images_per_card):
     cards_directory = 'combined_decks'
     backgrounds_directory = 'backgrounds'
-    output_image_directory = '../datasets/cards_2/images/val'
-    annotations_directory = '../datasets/cards_2/labels/val'
+    output_image_directory = '../../../../Desktop/datasets/cards_3/images/val'
+    annotations_directory = '../../../../Desktop/datasets/cards_3/labels/val'
 
-    if not os.path.exists(cards_directory):
-        os.makedirs(cards_directory)
-    if not os.path.exists(backgrounds_directory):
-        os.makedirs(backgrounds_directory)
-    if not os.path.exists(output_image_directory):
-        os.makedirs(output_image_directory)
-    else:
-        for filename in os.listdir(output_image_directory):
-            file_path = os.path.join(output_image_directory, filename)
-            try:
-                if os.path.isfile(file_path):
-                    os.remove(file_path)
-            except Exception as e:
-                print(f'Failed to delete {file_path}. Reason: {e}')
-    if not os.path.exists(annotations_directory):
-        os.makedirs(annotations_directory)
-    else:
-        for filename in os.listdir(annotations_directory):
-            file_path = os.path.join(annotations_directory, filename)
-            try:
-                if os.path.isfile(file_path):
-                    os.remove(file_path)
-            except Exception as e:
-                print(f'Failed to delete {file_path}. Reason: {e}')
+    make_directory(output_image_directory)
+    make_directory(annotations_directory)
 
     backgrounds = [f for f in os.listdir(backgrounds_directory) if os.path.isfile(os.path.join(backgrounds_directory, f))]
     def get_background():
@@ -419,5 +452,4 @@ def generate_dataset(num_images_per_card):
                 generated += 1
                 print(f'\rCompletion: {100 * (generated / (num_images_per_card*len(cards))):.2f}%', end='')
 
-# generates 20 images per card (104 cards)
-generate_dataset(20)
+generate_test_data()
