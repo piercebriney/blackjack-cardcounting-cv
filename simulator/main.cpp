@@ -49,6 +49,8 @@ int main() {
 
   myMatrix.perfectify(perfectness);
 
+  myMatrix.printWeights();
+
   player joseph;
   joseph.setCountingMethod(HiLo);
   joseph.setConfusionMatrix(myMatrix);

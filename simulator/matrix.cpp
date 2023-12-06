@@ -34,9 +34,9 @@ float c_matrix::getPerception(matrixCard real, matrixCard perceived) {
 }
 
 void c_matrix::allocate() {
-  for(int i = 0; i < 12; i++) {
+  for(int i = 0; i < 13; i++) {
     weights.push_back({});
-    for(int j = 0; j < 12; j++) {
+    for(int j = 0; j < 13; j++) {
       weights[weights.size() - 1].push_back({});
     }
   }
@@ -79,8 +79,8 @@ c_matrix::c_matrix(string fileaddress) {
   for(string line; getline(input, line);) {
     //for each line in input...
     vector<string> x = splitString(line, ' ');
-    if (i > 12) {break;}
-    for(int j = 0; j < 12; j++) {
+    if (i > 13) {break;}
+    for(int j = 0; j < 13; j++) {
       setPerception((matrixCard)j, (matrixCard)i, stof(x[j]));
     }
     i++;
@@ -88,12 +88,12 @@ c_matrix::c_matrix(string fileaddress) {
 
 
   //normalize
-  for(int i = 0; i < 12; i++) {
+  for(int i = 0; i < 13; i++) {
     float rowSum = 0;
-    for(int j = 0; j < 12; j++) {
+    for(int j = 0; j < 13; j++) {
       rowSum += weights[i][j];
     }
-    for(int j = 0; j < 12; j++) {
+    for(int j = 0; j < 13; j++) {
       weights[i][j] /= rowSum;
     }
   }
@@ -130,8 +130,8 @@ void c_matrix::printWeight(matrixCard real, matrixCard perceived) {
 
 void c_matrix::perfectify(float a) {
   if(a < 0 || a > 1) {return;}
-  for(int i = 0; i < 12; i++) {
-    for(int j = 0; j < 12; j++) {
+  for(int i = 0; i < 13; i++) {
+    for(int j = 0; j < 13; j++) {
       float idealValue = 0;
       if(i == j) { idealValue = 1;}
       weights[i][j] = (weights[i][j] * (1-a)) + idealValue * a;

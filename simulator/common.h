@@ -17,7 +17,7 @@ enum card {_2S,_3S,_4S,_5S,_6S,_7S,_8S,_9S,_10S,_JS,_QS,_KS,_AS,
 
 enum effectiveCard {_A, _2, _3, _4, _5, _6, _7, _8, _9, _T};
 
-enum matrixCard {MA, M2, M3, M4, M5, M6, M7, M8, M9, MJ, MQ, MK};
+enum matrixCard {MA, M2, M3, M4, M5, M6, M7, M8, M9, M10, MJ, MQ, MK};
 
 enum action {hit, stay, split, doubledown, surrender, voidaction};
 
