@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+#include <omp.h>
 using namespace std;
 
 analysis::analysis(c_matrix& mat, Rng& rng){
@@ -9,6 +10,57 @@ analysis::analysis(c_matrix& mat, Rng& rng){
     player1.setConfusionMatrix(mat);
     shoe1.reset(rng);
     dealer1.setShoe(shoe1);
+}
+
+void analysis::runTrials(int numTrials, int numRounds, Rng& rng, vector<float>& profits){
+    profits.resize(numTrials);
+
+    #pragma omp parallel
+    {
+        int stream = omp_get_thread_num();
+        gamestate g;
+        player p{this->player1};
+        shoe s{this->shoe1};
+        dealer d{this->dealer1};
+        Rng copy{rng};
+        pcg64 temp_rng{copy(), (__int128 unsigned)stream};
+        Rng r{(__int128 unsigned)temp_rng() << 64 | (__int128 unsigned)temp_rng()};
+
+        #pragma omp for
+        for (size_t t = 0; t < numTrials; t++) {
+            p.resetAll();
+            s.reset(r);
+            int initialBankRoll = p.getBankroll();
+            for(int i = 0; i < numRounds; i++){
+                d.playRound(p, g, r, false);
+            }
+            float profit = p.getBankroll() - initialBankRoll;
+            profits[t] = profit;
+        }
+    }
+}
+
+void analysis::printStats(vector<float>& profits){
+    float sum = 0.0;
+    float squares = 0.0;
+    size_t n = profits.size();
+
+    #pragma omp parallel for reduction (+:sum)
+    for (size_t i = 0; i < n; ++i) {
+        sum = sum + profits[i];
+    }
+
+    float mean = sum / n;
+
+    #pragma omp parallel for reduction (+:squares)
+    for (size_t i = 0; i < n; i++){
+        float diff = profits[i] - mean;
+        float square = diff * diff;
+        squares = squares + square;
+    }
+    float variance = squares / (n - 1);
+    float stdev = sqrt(variance);
+    printf("mean %f stdev %f\n", mean, stdev);
 }
 
 double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
