@@ -191,6 +191,151 @@ int getEffectiveCardValue(card a) {
   return getEffectiveCardValue(getEffectiveCard(a));
 }
 
+matrixCard getMatrixCard(card a) {
+  switch (a) {
+    case _2S:
+      return M2;
+    case _3S:
+      return M3;
+    case _4S:
+      return M4;
+    case _5S:
+      return M5;
+    case _6S:
+      return M6;
+    case _7S:
+      return M7;
+    case _8S:
+      return M8;
+    case _9S:
+      return M9;
+    case _10S:
+      return MJ;
+    case _JS:
+      return MJ;
+    case _QS:
+      return MQ;
+    case _KS:
+      return MK;
+    case _AS:
+      return MA;
+
+
+    case _2H:
+      return M2;
+    case _3H:
+      return M3;
+    case _4H:
+      return M4;
+    case _5H:
+      return M5;
+    case _6H:
+      return M6;
+    case _7H:
+      return M7;
+    case _8H:
+      return M8;
+    case _9H:
+      return M9;
+    case _10H:
+      return MJ;
+    case _JH:
+      return MJ;
+    case _QH:
+      return MQ;
+    case _KH:
+      return MK;
+    case _AH:
+      return MA;
+
+
+    case _2C:
+      return M2;
+    case _3C:
+      return M3;
+    case _4C:
+      return M4;
+    case _5C:
+      return M5;
+    case _6C:
+      return M6;
+    case _7C:
+      return M7;
+    case _8C:
+      return M8;
+    case _9C:
+      return M9;
+    case _10C:
+      return MJ;
+    case _JC:
+      return MJ;
+    case _QC:
+      return MQ;
+    case _KC:
+      return MK;
+    case _AC:
+      return MA;
+
+
+    case _2D:
+      return M2;
+    case _3D:
+      return M3;
+    case _4D:
+      return M4;
+    case _5D:
+      return M5;
+    case _6D:
+      return M6;
+    case _7D:
+      return M7;
+    case _8D:
+      return M8;
+    case _9D:
+      return M9;
+    case _10D:
+      return MJ;
+    case _JD:
+      return MJ;
+    case _QD:
+      return MQ;
+    case _KD:
+      return MK;
+    case _AD:
+      return MA;
+
+  }
+}
+
+card getCard(matrixCard a) {
+  switch (a) {
+    case MA:
+      return _AS;
+    case M2:
+      return _2S;
+    case M3:
+      return _3S;
+    case M4:
+      return _4S;
+    case M5:
+      return _5S;
+    case M6:
+      return _6S;
+    case M7:
+      return _7S;
+    case M8:
+      return _8S;
+    case M9:
+      return _9S;
+    case MJ:
+      return _JS;
+    case MQ:
+      return _QS;
+    case MK:
+      return _KS;
+  }
+}
+
 float getCountFromCard(card a, countingMethod b) {
   return g_countingMethods[b].at(getEffectiveCard(a));
 }
