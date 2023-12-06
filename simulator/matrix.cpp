@@ -1,7 +1,6 @@
 #include <fstream>
 #include <iostream>
 #include "matrix.h"
-#include <random>
 
 using namespace std;
 
@@ -35,9 +34,9 @@ float c_matrix::getPerception(matrixCard real, matrixCard perceived) {
 }
 
 void c_matrix::allocate() {
-  for(int i = 0; i < 13; i++) {
+  for(int i = 0; i < 12; i++) {
     weights.push_back({});
-    for(int j = 0; j < 13; j++) {
+    for(int j = 0; j < 12; j++) {
       weights[weights.size() - 1].push_back({});
     }
   }
@@ -82,24 +81,27 @@ c_matrix::c_matrix(string fileaddress) {
     vector<string> x = splitString(line, ' ');
     if (i > 12) {break;}
     for(int j = 0; j < 12; j++) {
-      setPerception((matrixCard)i, (matrixCard)j, stof(x[j]));
+      setPerception((matrixCard)j, (matrixCard)i, stof(x[j]));
     }
     i++;
   }
 
-  /*
-  if(this->verify() != 0) {
-    cout << "Error: sum of odds in row " << errorRow << " equals " << badSum << endl;
+
+  //normalize
+  for(int i = 0; i < 12; i++) {
+    float rowSum = 0;
+    for(int j = 0; j < 12; j++) {
+      rowSum += weights[i][j];
+    }
+    for(int j = 0; j < 12; j++) {
+      weights[i][j] /= rowSum;
+    }
   }
-  
-  cout << "Confusion matrix loaded successfully" << endl;
-  */
 }
 
-card c_matrix::perceive(card real, Rng& rng) {
-  std::uniform_real_distribution<float> d(0.0,1.0);
-  float randomness = d(rng);
+card c_matrix::perceive(card real) {
   matrixCard realMatrixCard = getMatrixCard(real);
+  float randomness = ( (double) rand() / RAND_MAX );
   float sumOfOdds = 0;
   //cout << "Randomness is " << randomness << endl;
 
@@ -109,7 +111,7 @@ card c_matrix::perceive(card real, Rng& rng) {
     }
     sumOfOdds += getPerception(realMatrixCard, (matrixCard)(i));
   }
-  return getCard((matrixCard)12);
+  return getCard(MK);
 }
 
 
@@ -128,8 +130,8 @@ void c_matrix::printWeight(matrixCard real, matrixCard perceived) {
 
 void c_matrix::perfectify(float a) {
   if(a < 0 || a > 1) {return;}
-  for(int i = 0; i < 13; i++) {
-    for(int j = 0; j < 13; j++) {
+  for(int i = 0; i < 12; i++) {
+    for(int j = 0; j < 12; j++) {
       float idealValue = 0;
       if(i == j) { idealValue = 1;}
       weights[i][j] = (weights[i][j] * (1-a)) + idealValue * a;

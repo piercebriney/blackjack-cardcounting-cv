@@ -14,17 +14,17 @@ dealer::dealer(shoe myShoe){
   setShoe(myShoe);
 }
 
-int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
-    g.clear();
+int dealer::playRound(player* p) {
+  gamestate g;
 
   //shuffle the decks if we have too few cards to play with
   if(herShoe.getCardsLeftInShoe() < G_MINIMUM_CARDS_IN_SHOE) {
-    herShoe.reset(rng);
-    p.resetCount();
+    herShoe.reset();
+    p->resetCount();
   }
   //bets are taken before dealing cards
-  int playerBet = p.getBet();
-  p.loseMoney(playerBet);
+  int playerBet = p->getBet();
+  p->loseMoney(playerBet);
   //cout << "Player's bet is " << playerBet << endl;
 
   card a = herShoe.drawCard();
@@ -38,24 +38,24 @@ int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
   initCards.push_back(a);
   initCards.push_back(b);
 
-  initPerceivedCards.push_back(p.seeCard(a, rng));
-  initPerceivedCards.push_back(p.seeCard(b, rng));
+  initPerceivedCards.push_back(p->seeCard(a));
+  initPerceivedCards.push_back(p->seeCard(b));
 
   g.stacks.push_back(initCards);
   g.perceivedStacks.push_back(initPerceivedCards);
   g.actions.push_back(hit);
   g.dealersCards.push_back(c);
   g.dealersCards.push_back(d);
-  g.dealersPerceivedCards.push_back(p.seeCard(c, rng));
+  g.dealersPerceivedCards.push_back(p->seeCard(c));
 
 
   bool tookInsurance = 0;
   //check if we should offer the player insurance
   if(getEffectiveCard(g.dealersCards[0]) == _A) {
-    if(p.takesInsurance() && p.getBankroll() > (playerBet / 2)) {
+    if(p->takesInsurance() && p->getBankroll() > (playerBet / 2)) {
       //cout << "The player purchases insurance." << endl;
       tookInsurance = 1;
-      p.loseMoney(playerBet / 2);
+      p->loseMoney(playerBet / 2);
     }
   }
 
@@ -73,15 +73,15 @@ int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
   }
   if(dealerGotBJ && tookInsurance) {
     //cout << "Dealer got a blackjack and the player was awarded for insurance." << endl;
-    p.getMoney(playerBet / 2);
-    p.getMoney(playerBet / 2);
-    p.getMoney(playerBet / 2);
+    p->getMoney(playerBet / 2);
+    p->getMoney(playerBet / 2);
+    p->getMoney(playerBet / 2);
   }
   if(playerGotBJ && !dealerGotBJ) {
     //payout is 3:2
     //cout << "RESULT: Player got a blackjack." << endl;
     int profit = playerBet * 1.5;
-    p.getMoney(playerBet + profit);
+    p->getMoney(playerBet + profit);
     return 0;
   }
   if(dealerGotBJ && !playerGotBJ) {
@@ -90,7 +90,7 @@ int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
   }
   if(playerGotBJ && dealerGotBJ) {
     //cout << "RESULT: Both player and dealer got blackjacks." << endl;
-    p.getMoney(playerBet);
+    p->getMoney(playerBet);
     return 0;
   }
 
@@ -100,57 +100,45 @@ int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
   for(int i = 0; i < g.stacks.size(); i++) {
     bool handOver = false;
     while(!handOver){
-      if (v) {
-      cout << "Player Cards are: ";
-      printPlayerCards(g, i);
-      }
-      action playerAction = p.getAction(g, i);
+      //cout << "Player Cards are: ";
+      //printPlayerCards(g, i);
+      action playerAction = p->getAction(g, i);
       if(playerAction == surrender){
-        if(v) {
-        cout << "Player surrenders:" << endl; 
-        }
+        //cout << "Player surrenders:" << endl; 
         g.actions[i] = surrender;
-        p.getMoney(playerBet/2);
+        p->getMoney(playerBet/2);
         handOver = true;
         
       }else if(playerAction == split){
-        if (v) {
-        cout << "Player splits:" << endl; 
-        }
-        p.loseMoney(playerBet);
+        //cout << "Player splits:" << endl; 
+        p->loseMoney(playerBet);
         vector<card> stackFromSplit;
         vector<card> perceivedStackFromSplit;
         card splitCard = g.stacks[i][0];
         card newCard = herShoe.drawCard();
         g.stacks[i][0] = newCard;
-        g.perceivedStacks[i][0] = p.seeCard(newCard, rng);
+        g.perceivedStacks[i][0] = p->seeCard(newCard);
         stackFromSplit.push_back(splitCard);
         g.stacks.push_back(stackFromSplit);
         g.perceivedStacks.push_back(perceivedStackFromSplit);
         g.actions.push_back(hit);
       }else if(playerAction == hit){
-        if (v) {
-        cout << "Player hits" << endl; 
-        }
+        //cout << "Player hits" << endl; 
         card newCard = herShoe.drawCard();
-        g.perceivedStacks[i].push_back(p.seeCard(newCard, rng));
+        g.perceivedStacks[i].push_back(p->seeCard(newCard));
         g.stacks[i].push_back(newCard);
       }else if(playerAction == stay){
-        if (v) {
-        cout << "Player stands" << endl;
-        }
+        //cout << "Player stands" << endl;
         handOver = true;
         g.actions[i] = stay;
       }else if(playerAction == doubledown) {
-        if (v) {
-        cout << "Player doubles down" << endl;
-        }
+        //cout << "Player doubles down" << endl;
         card newCard = herShoe.drawCard();
-        p.seeCard(newCard, rng);
-        g.perceivedStacks[i].push_back(p.seeCard(newCard, rng));
+        p->seeCard(newCard);
+        g.perceivedStacks[i].push_back(p->seeCard(newCard));
         g.stacks[i].push_back(newCard);
         handOver = true;
-        p.loseMoney(playerBet);
+        p->loseMoney(playerBet);
         g.actions[i] = doubledown;
       }
     }
@@ -203,37 +191,37 @@ int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
       int stackBusts = (stackIdealSum > 21);
       if(dealerBusts && !stackBusts) {
         //cout << "RESULT: Stack " << i << " WON with multiplier " << multiplier << "." << endl;
-        p.getMoney(playerBet*multiplier);
+        p->getMoney(playerBet*multiplier);
         int profit = playerBet;
-        p.getMoney(profit*multiplier);
+        p->getMoney(profit*multiplier);
       } else if(stackBusts && !dealerBusts) {
         //cout << "RESULT: Stack " << i << " LOST." << endl;
 
       } else if(stackBusts && dealerBusts) {
-        p.getMoney(playerBet*multiplier);
+        p->getMoney(playerBet*multiplier);
         //cout << "RESULT: Stack " << i << " TIED." << endl;
       } else { //neither busted
         //who has a higher total?
         if(stackIdealSum > dealerIdealSum) {
           //cout << "RESULT: Stack " << i << " WON with multiplier " << multiplier << "." << endl;
-          p.getMoney(playerBet*multiplier);
+          p->getMoney(playerBet*multiplier);
           int profit = playerBet;
-          p.getMoney(profit*multiplier);
+          p->getMoney(profit*multiplier);
         } else if(dealerIdealSum > stackIdealSum) {
           //cout << "RESULT: Stack " << i << " LOST." << endl;
           
         } else if(dealerIdealSum == stackIdealSum) {
           //cout << "RESULT: Stack " << i << " TIED." << endl;
-          p.getMoney(playerBet*multiplier);
+          p->getMoney(playerBet*multiplier);
         }
       }
     }
   }
 
-  p.seeCard(d, rng);
+  p->seeCard(d);
 
   //if the player doesn't have enough money to keep playing, kick them out
-  if(p.getBankroll() < G_MINIMUM_BET) {
+  if(p->getBankroll() < G_MINIMUM_BET) {
     return 1;
   }
 

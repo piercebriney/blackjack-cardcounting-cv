@@ -5,12 +5,17 @@
 
 //a class meant to represet a shoe, or a machine containing multiple decks of cards
 
+struct RNG {
+  int operator() (int n) {
+        return std::rand() / (1.0 + RAND_MAX) * n;
+    }
+};
 class shoe {
   std::vector<card> contents;
 
 public:
-  void reset(Rng& rng); //reset the shoe based on G_NUM_DECKS
-  void shuffle(Rng& rng);
+  void reset(); //reset the shoe based on G_NUM_DECKS
+  void shuffle();
   void addDeck();
   int getCardsLeftInShoe();
   card drawCard();

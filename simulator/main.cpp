@@ -8,7 +8,6 @@
 #include "strategy.h"
 #include "dealer.h"
 #include <iomanip>
-#include <random>
 using namespace std;
 
 
@@ -17,17 +16,19 @@ void loadMatrixFromFile(string fileaddress) {
 }
 
 int main() {
+
+  //srand(time(0));
+  
   cout << "Input seed:\n>";
   string seedSTR;
   getline(cin, seedSTR);
-  Rng rng{0};
   if(seedSTR.size() == 0) {
-    pcg_extras::seed_seq_from<std::random_device> seed_source;
-    rng = Rng{seed_source};
-    cout << "Using randomized initial state " << rng << endl;
+    int seed = time(0);
+    cout << "Using seed " << seed << "." << endl;
+    srand(time(0));
   } else {
     cout << "Using seed " << seedSTR << "." << endl;
-    rng = Rng{(__int128 unsigned)stoi(seedSTR)};
+    srand(stoi(seedSTR));
   }
 
   commonInit();
@@ -35,55 +36,50 @@ int main() {
 
   printf("Input name of c_matrix:\n>");
   
-  string input{"mockup.csv"};
+  string input;
   cin >> input;
 
-  string fileaddress = "matrix/" + input + ".csv";
+  string fileaddress = "matrix/" + input + ".txt";
 
   c_matrix myMatrix = c_matrix(fileaddress);
 
   printf("Input matrix improvement coefficient (0->unchanged, 1->identity matrix):\n>");
-  float perfectness = 1.0;
+  float perfectness;
   cin >> perfectness;
 
   myMatrix.perfectify(perfectness);
 
-  //player joseph;
-  //joseph.setCountingMethod(HiLo);
-  //joseph.setConfusionMatrix(myMatrix);
+  player joseph;
+  joseph.setCountingMethod(HiLo);
+  joseph.setConfusionMatrix(myMatrix);
   
-  ////Creates shoe, fills shoe with cards, and shuffles deck
-  //shoe myShoe;
-  //myShoe.reset(rng);
+  //Creates shoe, fills shoe with cards, and shuffles deck
+  shoe myShoe;
+  myShoe.reset();
 
-  ////Creates dealer object and set the shoe to the one made previously
-  //dealer myDealer;
-  //myDealer.setShoe(myShoe);
+  //Creates dealer object and set the shoe to the one made previously
+  dealer myDealer;
+  myDealer.setShoe(myShoe);
   
-  //int lastBankroll = joseph.getBankroll();
-  ////!!! Finish main playing logic
-  //gamestate g;
-  //for(int i = 0; i < G_NUM_ROUNDS; i++){
-  //  //cout << endl << "----------" << "Play round " << (i+1) << "/" << G_NUM_ROUNDS << " ----------" << endl;
-  //  if(myDealer.playRound(joseph, g, rng, false)) { cout << "Player went bankrupt." << endl; break;}
-  //  //cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
-  //  int change = joseph.getBankroll() - lastBankroll;
-  //  //cout << "Change in bankroll: " << std::setprecision(100) << change << endl;
-  //  lastBankroll = joseph.getBankroll();
-  //}
+  int lastBankroll = joseph.getBankroll();
+  //!!! Finish main playing logic
+  for(int i = 0; i < G_NUM_ROUNDS; i++){
+    //cout << endl << "----------" << "Play round " << (i+1) << "/" << G_NUM_ROUNDS << " ----------" << endl;
+    if(myDealer.playRound(&joseph)) { cout << "Player went bankrupt." << endl; break;}
+    //cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
+    int change = joseph.getBankroll() - lastBankroll;
+    //cout << "Change in bankroll: " << std::setprecision(100) << change << endl;
+    lastBankroll = joseph.getBankroll();
+  }
 
-  //cout << endl;
-  //cout << "Player's final bankroll is: " << std::setprecision(100) << joseph.getBankroll() << endl;
-  //int profit = joseph.getBankroll() - G_STARTING_BANKROLL;
-  //int hourlyWage = profit / (G_NUM_ROUNDS / G_NUM_ROUNDS_PER_HOUR);
-  //cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
+  cout << endl;
+  cout << "Player's final bankroll is: " << std::setprecision(100) << joseph.getBankroll() << endl;
+  int profit = joseph.getBankroll() - G_STARTING_BANKROLL;
+  int hourlyWage = profit / (G_NUM_ROUNDS / G_NUM_ROUNDS_PER_HOUR);
+  cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
   
-  vector<float> profits;
- analysis a{myMatrix, rng};
- a.runTrials(10000, G_NUM_ROUNDS, rng, profits);
- a.printStats(profits);
-
- // double x = a.getAverageProfit(10000, G_NUM_ROUNDS, rng);
+ analysis a(myMatrix);
+ //double x = a.getAverageProfit(100, G_NUM_ROUNDS);
  //a.testEpsilons(fileaddress);
  //a.getAverageProfit(20, G_NUM_ROUNDS);
  //a.getAverageProfit(100, G_NUM_ROUNDS);
