@@ -41,7 +41,7 @@ int main() {
 
   string fileaddress = "matrix/" + input + ".txt";
 
-  c_matrix myMatrix = c_matrix(fileaddress);
+  c_matrix myMatrix = c_matrix("1.0_15.txt");
 
   printf("Input matrix improvement coefficient (0->unchanged, 1->identity matrix):\n>");
   float perfectness;
@@ -81,6 +81,12 @@ int main() {
   cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
   
  analysis a(myMatrix);
+ // a.varyAnglesGivenHeight(10000, 800, 1.0);
+ for(double i = 3.5; i <= 5.0; i += 0.5){
+  a.varyAnglesGivenHeight(10000, 800, i);
+ }
+// a.getAverageProfit(10000, G_NUM_ROUNDS);
+ 
  //double x = a.getAverageProfit(100, G_NUM_ROUNDS);
  //a.testEpsilons(fileaddress);
  //a.getAverageProfit(20, G_NUM_ROUNDS);
