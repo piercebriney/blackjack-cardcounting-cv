@@ -78,7 +78,16 @@ action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   card dealerCard;
   dealerCard = g.dealersPerceivedCards[0];
 
-  return hardTotals(playerSum, getEffectiveCardValue(getEffectiveCard(dealerCard)));
+  action a = hardTotals(playerSum, getEffectiveCardValue(getEffectiveCard(dealerCard)));
+  if(a == doubledown){
+    if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
+       return doubledown;
+     } else {
+       return hit;
+     }
+  }
+  return a;
+
   //string column, row;
   
   //row = to_string(playerSum);
@@ -111,7 +120,7 @@ action softTotals(int playerCard, int dealerCard){
   }else if(playerCard == 7){
     if(dealerCard >= 2 && dealerCard <= 6){
       return doubledown;
-    }else if(dealerCard >= 8 && dealerCard <= 8){
+    }else if(dealerCard >= 7 && dealerCard <= 8){
       return stay;
     }else{
       return hit;
@@ -166,7 +175,15 @@ action getSoftTotalsAction(gamestate& g, int stackIndex, float trueCount) {
 
   int playerCardVal = nonAceTotal;
   int dealerCardVal = getEffectiveCardValue(getEffectiveCard(g.dealersPerceivedCards[0]));
-  return softTotals(playerCardVal, dealerCardVal);
+  action a = softTotals(playerCardVal, dealerCardVal);
+  if(a == doubledown){
+    if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
+       return doubledown;
+     } else {
+       return hit;
+     }
+  }
+  return a;
 
   // string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
   // string row = to_string(nonAceTotal);
@@ -202,7 +219,7 @@ bool shouldSplit(int playerCard, int dealerCard){
     if(dealerCard == 7 || dealerCard == 10 || dealerCard == 1){
       return false;
     }else {
-      return false;
+      return true;
     }
   }else if(playerCard == 8){
     return true;
