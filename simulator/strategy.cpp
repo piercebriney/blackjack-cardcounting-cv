@@ -28,6 +28,43 @@ string lookup(mp& m, string& column, string& row) {
         return "error";
     }
 }
+
+action hardTotals(int playerSum, int dealerCard){
+  if(playerSum <= 21 && playerSum >= 17) {
+    return stay;
+  }else if(playerSum <= 16 && playerSum >= 13){
+    if(dealerCard >= 2 && dealerCard <= 6){
+      return stay;
+    }else{
+      return hit;
+    }
+  }else if(playerSum == 12){
+    if(dealerCard >= 4 && dealerCard <= 6){
+      return stay;
+    }else{
+      return hit;
+    }
+  }else if(playerSum == 11){
+    return doubledown;
+  }else if(playerSum == 10){
+    if(dealerCard >= 2 && dealerCard <= 9){
+      return doubledown;
+    }else{
+      return hit;
+    }
+  }else if(playerSum == 9){
+    if(dealerCard >= 3 && dealerCard <= 6){
+      return doubledown;
+    }else{
+      return hit;
+    }
+  }else{
+    return hit;
+  }
+}
+
+
+
 action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   int playerSum = 0;
   for(auto c : g.perceivedStacks[stackIndex]) {
@@ -41,24 +78,63 @@ action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   card dealerCard;
   dealerCard = g.dealersPerceivedCards[0];
 
-  string column, row;
+  return hardTotals(playerSum, getEffectiveCardValue(getEffectiveCard(dealerCard)));
+  //string column, row;
   
-  row = to_string(playerSum);
-  column = getEffectiveCardName(getEffectiveCard(dealerCard));
+  //row = to_string(playerSum);
+  //column = getEffectiveCardName(getEffectiveCard(dealerCard));
   //!!! add functionality for doubling down
-  string result = lookup(g_hardTotalsMap, column, row);
-  if(result == "S") {
+  // string result = lookup(g_hardTotalsMap, column, row);
+  // if(result == "S") {
+  //   return stay;
+  // } else if (result == "H") {
+  //   return hit;
+  // } else if (result == "D") {
+  //   if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
+  //     return doubledown;
+  //   } else {
+  //     return hit;
+  //   }
+  // }
+  return stay;
+}
+
+action softTotals(int playerCard, int dealerCard){
+  if(playerCard == 9){
     return stay;
-  } else if (result == "H") {
-    return hit;
-  } else if (result == "D") {
-    if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
+  }else if(playerCard == 8){
+    if(dealerCard == 6){
       return doubledown;
-    } else {
+    }else{
+      return stay;
+    }
+  }else if(playerCard == 7){
+    if(dealerCard >= 2 && dealerCard <= 6){
+      return doubledown;
+    }else if(dealerCard >= 8 && dealerCard <= 8){
+      return stay;
+    }else{
+      return hit;
+    }
+  }else if(playerCard == 6){
+    if(dealerCard >= 3 && dealerCard <= 6){
+      return doubledown;
+    }else{
+      return hit;
+    }
+  }else if(playerCard == 5 || playerCard == 4){
+    if(dealerCard >= 4 && dealerCard <= 6){
+      return doubledown;
+    }else{
+      return hit;
+    }
+  }else if(playerCard == 3 || playerCard == 2){
+    if(dealerCard >= 5 && dealerCard <= 6){
+      return doubledown;
+    }else{
       return hit;
     }
   }
-  return stay;
 }
 
 action getSoftTotalsAction(gamestate& g, int stackIndex, float trueCount) {
@@ -88,29 +164,75 @@ action getSoftTotalsAction(gamestate& g, int stackIndex, float trueCount) {
     return stay;
   }
 
-  string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
-  string row = to_string(nonAceTotal);
-  string result = lookup(g_softTotalsMap, column, row);
+  int playerCardVal = nonAceTotal;
+  int dealerCardVal = getEffectiveCardValue(getEffectiveCard(g.dealersPerceivedCards[0]));
+  return softTotals(playerCardVal, dealerCardVal);
 
-  //!!! add functionality for doubling down
-  if(result == "S") {
-    return stay;
-  } else if(result == "H") {
-    return hit;
-  } else if(result == "Ds") {
-    if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
-      return doubledown;
-    } else {
-      return stay;
+  // string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
+  // string row = to_string(nonAceTotal);
+  // string result = lookup(g_softTotalsMap, column, row);
+
+  // //!!! add functionality for doubling down
+  // if(result == "S") {
+  //   return stay;
+  // } else if(result == "H") {
+  //   return hit;
+  // } else if(result == "Ds") {
+  //   if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
+  //     return doubledown;
+  //   } else {
+  //     return stay;
+  //   }
+  // } else if(result == "D") {
+  //   if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
+  //     return doubledown;
+  //   } else {
+  //     return hit;
+  //   }
+  // }
+  // return stay;
+}
+
+bool shouldSplit(int playerCard, int dealerCard){
+  if(playerCard == 1){
+    return true;
+  }else if(playerCard == 10){
+    return false;
+  }else if(playerCard == 9){
+    if(dealerCard == 7 || dealerCard == 10 || dealerCard == 1){
+      return false;
+    }else {
+      return false;
     }
-  } else if(result == "D") {
-    if(trueCount > 1 || !G_ONLY_DD_WITH_ADV) {
-      return doubledown;
-    } else {
-      return hit;
+  }else if(playerCard == 8){
+    return true;
+  }else if(playerCard == 7){
+    if(dealerCard >= 2 && dealerCard <= 7){
+      return true;
+    }else{
+      return false;
+    }
+  }else if(playerCard == 6){
+    if(dealerCard >= 2 && dealerCard <= 6){
+      return true;
+    }else{
+      return false;
+    }
+  }else if(playerCard == 5){
+    return false;
+  }else if(playerCard == 4){
+    if(dealerCard == 5 || dealerCard == 6){
+      return true;
+    }else{
+      return false;
+    }
+  }else if(playerCard == 2 || playerCard == 3){
+    if(dealerCard >= 2 && dealerCard <= 7){
+      return true;
+    }else{
+      return false;
     }
   }
-  return stay;
 }
 
 bool shouldPlayerSplit(gamestate& g, int stackIndex) {
@@ -123,14 +245,17 @@ bool shouldPlayerSplit(gamestate& g, int stackIndex) {
     throw std::invalid_argument("getSplitAction() called but the stack's cards aren't identical");
   }
 
-  string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
-  string row = getEffectiveCardName(getEffectiveCard(g.perceivedStacks[stackIndex][0]));
-  string result = lookup(g_pairSplittingMap, column, row);
-  if(result == "Y" || result == "Yn") {
-    return 1;
-  } else {
-    return 0;
-  }
+  int dealerCard = getEffectiveCardValue(getEffectiveCard(g.dealersPerceivedCards[0]));
+  int playerCard = getEffectiveCardValue(getEffectiveCard(g.perceivedStacks[stackIndex][0]));
+  return shouldSplit(playerCard, dealerCard);
+  //string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
+  //string row = getEffectiveCardName(getEffectiveCard(g.perceivedStacks[stackIndex][0]));
+  // string result = lookup(g_pairSplittingMap, column, row);
+  // if(result == "Y" || result == "Yn") {
+  //   return 1;
+  // } else {
+  //   return 0;
+  // }
 }
 
 bool shouldUseHardTotals(gamestate& g, int stackIndex){
@@ -151,16 +276,18 @@ bool shouldPlayerSurrender(gamestate& g, int stackIndex) {
 
   card dealerCard;
   dealerCard = g.dealersCards[0];
-
-  if(playerSum > 16 || playerSum < 14) {
+  int dealerCardVal = getEffectiveCardValue(getEffectiveCard(dealerCard));
+  if(playerSum == 16 && (dealerCardVal == 9 || dealerCardVal == 10 || dealerCardVal == 1)) {
+    return true;
+  }else{
     return false;
   }
 
-  string row = to_string(playerSum);
-  string column = getEffectiveCardName(getEffectiveCard(dealerCard));
+  // string row = to_string(playerSum);
+  // string column = getEffectiveCardName(getEffectiveCard(dealerCard));
 
-  string result = lookup(g_lateSurrenderMap, column, row);
-  if(result == "Y") {return true;} else {return false;}
+  // string result = lookup(g_lateSurrenderMap, column, row);
+  // if(result == "Y") {return true;} else {return false;}
 }
 
 bool shouldPlayerInsure(float trueCount) {
@@ -198,6 +325,10 @@ action getActionFromDeviations(gamestate& g, int stackIndex, float trueCount) {
   }
   return voidaction;
 }
+
+
+
+
 
 void loadStrategy() {
 
@@ -245,6 +376,9 @@ void loadStrategy() {
     {"3", "H" , "H" , "H" , "D" , "D" , "H" , "H" , "H" , "H" , "H" },
     {"2", "H" , "H" , "H" , "D" , "D" , "H" , "H" , "H" , "H" , "H" },
   };
+  
+
+
   for(int row = 1; row <= 8; row++){
     for(int col = 1; col <= 10; col++){
       string r = g_softTotalsTable[row][0];
