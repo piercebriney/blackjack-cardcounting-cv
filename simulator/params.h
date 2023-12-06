@@ -9,5 +9,6 @@
 #define G_MAXIMUM_BET 2500
 #define G_MINIMUM_CARDS_IN_SHOE 25
 #define G_ONLY_DD_WITH_ADV 25
+#define G_MAX_STACKS 4
 
 #endif
