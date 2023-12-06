@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+#include <sstream>
 using namespace std;
 
 analysis::analysis(c_matrix mat){
@@ -75,9 +76,19 @@ void analysis::testEpsilons(string filestr){
     }
 }
 
-void analysis::varyConfusionMatrices(vector<c_matrix> mats, int numTrials, int numRounds){
-    for(int i = 0; i < mats.size(); i++){
-        player1.setConfusionMatrix(mats[i]);
-        int x = getAverageProfit(numTrials, numRounds);
+void analysis::varyAnglesGivenHeight(int numTrials, int numRounds, double height){
+    fstream fout;
+    string h(16, '\0');
+    auto w = snprintf(&h[0], h.size(), "%.1f", height);
+    h.resize(w);
+    fout.open("results/angles_at_height_"+h+".csv", ios::out | ios::app);
+    for(int i = 15; i <= 90; i += 5){
+        if(i == 20 || i == 25 || i%15 == 0){
+            c_matrix myMatrix = c_matrix("matrix/" + h + "_" + to_string(i) + ".txt");
+            player1.setConfusionMatrix(myMatrix);
+            float p = getAverageProfit(numTrials, numRounds);
+            fout << i << "," << p << "\n";
+        }
+        
     }
 }

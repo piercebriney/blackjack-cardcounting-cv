@@ -16,7 +16,7 @@ class analysis {
         double getAverageProfit(int numTrials, int numRounds);
         float calcStandDev(std::vector<float> profits);
         void testEpsilons(std::string filestr);
-        void varyConfusionMatrices(std::vector<c_matrix> mats, int numTrials, int numRounds);
+        void varyAnglesGivenHeight(int numTrials, int numRouds, double height);
 
 };
 
