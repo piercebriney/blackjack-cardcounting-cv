@@ -50,8 +50,9 @@ struct gamestate {
   
   std::vector<stack> perceivedStacks; //these ones are filled by the player by perception
   stack dealersPerceivedCards;
-  stack initCards;
-  stack initPerceivedCards;
+
+  gamestate() {
+  }
 
   void clear() {
       stacks.clear();
