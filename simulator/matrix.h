@@ -35,7 +35,7 @@ public:
   float getPerception(matrixCard real, matrixCard perceived);
   
   //given a real card, return the perception
-  card perceive(card real);
+  card perceive(card real, Rng& rng);
 
   
   // TESTING

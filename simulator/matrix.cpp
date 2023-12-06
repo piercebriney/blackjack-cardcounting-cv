@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include "matrix.h"
+#include <random>
 
 using namespace std;
 
@@ -95,9 +96,10 @@ c_matrix::c_matrix(string fileaddress) {
   */
 }
 
-card c_matrix::perceive(card real) {
+card c_matrix::perceive(card real, Rng& rng) {
+  std::uniform_real_distribution<float> d(0.0,1.0);
+  float randomness = d(rng);
   matrixCard realMatrixCard = getMatrixCard(real);
-  float randomness = ( (double) rand() / RAND_MAX );
   float sumOfOdds = 0;
   //cout << "Randomness is " << randomness << endl;
 
