@@ -6,7 +6,8 @@
 #include "common.h"
 
 class c_matrix {
-  //52x52 2d vector
+
+  //13x13 2d vector
   std::vector<std::vector<float>> weights;
 
   int errorRow = -1;
@@ -23,7 +24,7 @@ public:
 
   int verify();
 
-  void setPerception(card real, card perceived, float chance);
+  void setPerception(matrixCard real, matrixCard perceived, float chance);
 
   //interpolate between this matrix and the identity matrix
   //with a == 1, it returns the identity matrix
@@ -31,24 +32,16 @@ public:
   
 
   // USAGE
-  float getPerception(card real, card perceived);
+  float getPerception(matrixCard real, matrixCard perceived);
   
   //given a real card, return the perception
   card perceive(card real);
-
 
   
   // TESTING
   void printWeights();
 
-  void printWeight(card real, card perceived);
-
-  void matrixTest();
-
-  int perceptionTest(card real);
-
-  int comprehensiveTest();
-
+  void printWeight(matrixCard real, matrixCard perceived);
 };
 
 #endif
