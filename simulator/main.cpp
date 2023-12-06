@@ -16,6 +16,30 @@ void loadMatrixFromFile(string fileaddress) {
 }
 
 int main() {
+
+  if(1) {
+    cout << "Joseph is testing" << endl;
+
+    printf("Input name of c_matrix:\n>");
+    
+    string input;
+    cin >> input;
+  
+    string fileaddress = "matrix/" + input + ".txt";
+  
+    c_matrix myMatrix = c_matrix(fileaddress);
+
+    myMatrix.printWeights();
+
+    cout << getCardName(myMatrix.perceive(_8S)) << endl;
+    cout << getCardName(myMatrix.perceive(_8S)) << endl;
+    cout << getCardName(myMatrix.perceive(_8S)) << endl;
+    cout << getCardName(myMatrix.perceive(_8S)) << endl;
+    cout << getCardName(myMatrix.perceive(_8S)) << endl;
+
+   
+  } else {
+
   //srand(time(0));
   
   cout << "Input seed:\n>";
@@ -87,4 +111,5 @@ int main() {
  //a.getAverageProfit(750, G_NUM_ROUNDS);
  //a.getAverageProfit(1000, G_NUM_ROUNDS);
  //a.testEpsilons(fileaddress);
+  }
 }
