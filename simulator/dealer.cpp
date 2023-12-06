@@ -14,8 +14,8 @@ dealer::dealer(shoe myShoe){
   setShoe(myShoe);
 }
 
-int dealer::playRound(player* p, Rng& rng, bool v) {
-  gamestate g;
+int dealer::playRound(player* p, gamestate& g, Rng& rng, bool v) {
+    g.clear();
 
   //shuffle the decks if we have too few cards to play with
   if(herShoe.getCardsLeftInShoe() < G_MINIMUM_CARDS_IN_SHOE) {

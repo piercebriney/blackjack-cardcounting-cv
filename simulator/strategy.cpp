@@ -169,7 +169,7 @@ bool shouldPlayerInsure(float trueCount) {
 
 action getActionFromDeviations(gamestate& g, int stackIndex, float trueCount) {
   
-  for(deviation d : g_illustrious_18) {
+  for(deviation& d : g_illustrious_18) {
     if(  
         (!d.activeLessThan && trueCount > d.index)
         ||

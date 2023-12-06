@@ -14,6 +14,7 @@ analysis::analysis(c_matrix& mat, Rng& rng){
 double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
     float totalProfit = 0;
     vector<float> profits;
+    gamestate g;
     for(int t = 0; t < numTrials; t++){
         // cout << "TRIAL " << t << '\n';
         player1.resetAll();
@@ -21,7 +22,7 @@ double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
         int initialBankRoll = player1.getBankroll();
         //cout << "Initial Bankroll: " << initialBankRoll << endl;
         for(int i = 0; i < numRounds; i++){
-            dealer1.playRound(&player1, rng, false);
+            dealer1.playRound(&player1, g, rng, false);
         }
         float p = player1.getBankroll() - initialBankRoll;
         //cout << "After bankroll: " << player1.getBankroll() << endl;

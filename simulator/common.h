@@ -50,6 +50,16 @@ struct gamestate {
   
   std::vector<stack> perceivedStacks; //these ones are filled by the player by perception
   stack dealersPerceivedCards;
+  stack initCards;
+  stack initPerceivedCards;
+
+  void clear() {
+      stacks.clear();
+      actions.clear();
+      dealersCards.clear();
+      perceivedStacks.clear();
+      dealersPerceivedCards.clear();
+  }
 };
 
 struct deviation {

@@ -19,12 +19,12 @@ void loadMatrixFromFile(string fileaddress) {
 int main() {
   cout << "Input seed:\n>";
   string seedSTR;
-  // getline(cin, seedSTR);
+  getline(cin, seedSTR);
   Rng rng{0};
   if(seedSTR.size() == 0) {
-    // pcg_extras::seed_seq_from<std::random_device> seed_source;
-    // rng = Rng{seed_source};
-    // cout << "Using randomized initial state " << rng << endl;
+    pcg_extras::seed_seq_from<std::random_device> seed_source;
+    rng = Rng{seed_source};
+    cout << "Using randomized initial state " << rng << endl;
   } else {
     cout << "Using seed " << seedSTR << "." << endl;
     rng = Rng{(__int128 unsigned)stoi(seedSTR)};
@@ -36,7 +36,7 @@ int main() {
   printf("Input name of c_matrix:\n>");
   
   string input{"mockup.csv"};
-  // cin >> input;
+  cin >> input;
 
   string fileaddress = "matrix/" + input + ".csv";
 
@@ -44,7 +44,7 @@ int main() {
 
   printf("Input matrix improvement coefficient (0->unchanged, 1->identity matrix):\n>");
   float perfectness = 1.0;
-  // cin >> perfectness;
+  cin >> perfectness;
 
   myMatrix.perfectify(perfectness);
 
@@ -62,9 +62,10 @@ int main() {
   
   int lastBankroll = joseph.getBankroll();
   //!!! Finish main playing logic
+  gamestate g;
   for(int i = 0; i < G_NUM_ROUNDS; i++){
     //cout << endl << "----------" << "Play round " << (i+1) << "/" << G_NUM_ROUNDS << " ----------" << endl;
-    if(myDealer.playRound(&joseph, rng, false)) { cout << "Player went bankrupt." << endl; break;}
+    if(myDealer.playRound(&joseph, g, rng, false)) { cout << "Player went bankrupt." << endl; break;}
     //cout << "Bankroll: " << std::setprecision(100) << joseph.getBankroll() << endl;
     int change = joseph.getBankroll() - lastBankroll;
     //cout << "Change in bankroll: " << std::setprecision(100) << change << endl;
