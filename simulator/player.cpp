@@ -9,11 +9,13 @@ player::player(){
 
 }
 
-card player::seeCard(card a, Rng& rng) {
+card player::seeCard(card a) {
   cardsCounted++;
-  card perceivedCard = hisConfusionMatrix.perceive(a, rng);
+  vector<int>* thisCountingMethod;
+  card perceivedCard = hisConfusionMatrix.perceive(a);
   //cout << "Perceived " << getCardName(a) << " as " << getCardName(perceivedCard) << endl;
-  runningCount += g_countingMethods[hisCountingMethod].at(getEffectiveCard(perceivedCard));
+  thisCountingMethod = &g_countingMethods[hisCountingMethod];
+  runningCount += thisCountingMethod->at(getEffectiveCard(perceivedCard));
   return perceivedCard;
 }
 
@@ -74,13 +76,13 @@ int player::getBet() {
 }
 
 //perfect basic strategy reduces casino edge to merely 0.5%
-action player::getBasicStrategyAction(gamestate& a) {
+action player::getBasicStrategyAction(gamestate a) {
   
   return hit;
 }
 
 //player action is a function of the dealer's faceup card, the cards in this stack, and the true count
-action player::getAction(gamestate& g, int stackIndex) {
+action player::getAction(gamestate g, int stackIndex) {
   float trueCount = getTrueCount();
 
   //did thisStack bust?
@@ -126,10 +128,10 @@ bool player::takesInsurance() {
   return shouldPlayerInsure(tc);
 }
 
-void player::setConfusionMatrix(c_matrix& a) {
+void player::setConfusionMatrix(c_matrix a) {
   hisConfusionMatrix = a;
 }
 
-card player::perceive(card real, Rng& rng) {
-  return hisConfusionMatrix.perceive(real, rng);
+card player::perceive(card real) {
+  return hisConfusionMatrix.perceive(real);
 }
