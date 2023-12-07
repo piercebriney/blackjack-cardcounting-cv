@@ -34,15 +34,6 @@ float c_matrix::getPerception(matrixCard real, matrixCard perceived) {
   return weights[real][perceived];
 }
 
-void c_matrix::allocate() {
-  for(int i = 0; i < 13; i++) {
-    weights.push_back({});
-    for(int j = 0; j < 13; j++) {
-      weights[weights.size() - 1].push_back({});
-    }
-  }
-}
-
 int c_matrix::verify() {
   const float tolerance = 0.0001;
   //make sure that each row adds up to roughly one
@@ -66,11 +57,9 @@ int c_matrix::verify() {
 }
 
 c_matrix::c_matrix() {
-  this->allocate();
 }
 
 c_matrix::c_matrix(string fileaddress) {
-  this->allocate();
 
   cout << "Loading matrix " << fileaddress << " ..." << endl;
 
@@ -82,7 +71,6 @@ c_matrix::c_matrix(string fileaddress) {
     vector<string> x = splitString(line, ' ');
     if (i > 13) {break;}
     for(int j = 0; j < 13; j++) {
-        cout << i << " " << j << x[j] << endl;
       setPerception((matrixCard)j, (matrixCard)i, stof(x[j]));
     }
     i++;
