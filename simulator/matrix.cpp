@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include "matrix.h"
+#include <random>
 
 using namespace std;
 
@@ -81,27 +82,28 @@ c_matrix::c_matrix(string fileaddress) {
     vector<string> x = splitString(line, ' ');
     if (i > 13) {break;}
     for(int j = 0; j < 13; j++) {
+        cout << i << " " << j << x[j] << endl;
       setPerception((matrixCard)j, (matrixCard)i, stof(x[j]));
     }
     i++;
   }
 
-
   //normalize
   for(int i = 0; i < 13; i++) {
     float rowSum = 0;
-    for(int j = 0; j < 13; j++) {
-      rowSum += weights[i][j];
+        for(int j = 0; j < 13; j++) {
+          rowSum += weights[i][j];
+        }
+        for(int j = 0; j < 13; j++) {
+          weights[i][j] /= rowSum;
+        }
     }
-    for(int j = 0; j < 13; j++) {
-      weights[i][j] /= rowSum;
-    }
-  }
 }
 
-card c_matrix::perceive(card real) {
+card c_matrix::perceive(card real, Rng& rng) {
+  std::uniform_real_distribution<float> d(0.0,1.0);
+  float randomness = d(rng);
   matrixCard realMatrixCard = getMatrixCard(real);
-  float randomness = ( (double) rand() / RAND_MAX );
   float sumOfOdds = 0;
   //cout << "Randomness is " << randomness << endl;
 
@@ -111,7 +113,7 @@ card c_matrix::perceive(card real) {
     }
     sumOfOdds += getPerception(realMatrixCard, (matrixCard)(i));
   }
-  return getCard(MK);
+  return getCard((matrixCard)12);
 }
 
 

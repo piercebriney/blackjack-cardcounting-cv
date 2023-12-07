@@ -20,69 +20,15 @@ mp g_lateSurrenderMap;
 
 vector<deviation> g_illustrious_18;
 
-string lookup(table table, string column, string row, string tableName) {
-  
-  //int rowIndex = -1; int columnIndex = -1;
-
-  if(tableName == "hardTotalsTable"){
-    if(g_hardTotalsMap.find(row+column) == g_hardTotalsMap.end()){
-      //cout << "hardtotal error on row" << row << " and column " << column << endl;
-      return "error";
-    }else{
-      return g_hardTotalsMap[row+column];
+string lookup(mp& m, string& column, string& row) {
+    auto it = m.find(row+column);
+    if (it != m.end()) {
+        return it->second;
+    } else {
+        return "error";
     }
-  }
-  if(tableName == "softTotalsTable"){
-    if(g_softTotalsMap.find(row+column) == g_softTotalsMap.end()){
-      //cout << "softTotal error on row " << row << " and column " << column << endl;
-      return "error";
-    }else{
-      return g_softTotalsMap[row+column];
-    }
-  }
-  if(tableName == "pairSplittingTable"){
-    if(g_pairSplittingMap.find(row+column) == g_pairSplittingMap.end()){
-      //cout << "pairSplitting error on row " << row << " and column " << column << endl;
-      return "error";
-    }else{
-      return g_pairSplittingMap[row+column];
-    }
-  }
-  if(tableName == "lateSurrenderTable"){
-    if(g_lateSurrenderMap.find(row+column) == g_lateSurrenderMap.end()){
-      //cout << "lateSurrender error on row " << row << " and column " << column << endl;
-      return "error";
-    }else{
-      return g_lateSurrenderMap[row+column];
-    }
-  }
-
-  /*for(int i = 0; i < table.size(); i++) {
-    if(table[i][0] == row) {
-      rowIndex = i;
-      break;
-    }
-  }
-  if(rowIndex == -1) {
-   //cout << "Lookup-error with nonexistant row " << row << " and column " << column << endl;
-    return "error";
-  }
-
-  for(int i = 0; i < table[0].size(); i++) {
-    if(table[0][i] == column) {
-      columnIndex = i;
-      break;
-    }
-  }
-  if(columnIndex == -1) {
-    //cout << "Lookup-error with row " << row << " and nonexistant column " << column << endl;
-    return "error";
-  }*/
-
-  return "error";
 }
-
-action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
+action getHardTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   int playerSum = 0;
   for(auto c : g.perceivedStacks[stackIndex]) {
     playerSum+=getEffectiveCardValue(getEffectiveCard(c));
@@ -100,7 +46,7 @@ action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
   row = to_string(playerSum);
   column = getEffectiveCardName(getEffectiveCard(dealerCard));
   //!!! add functionality for doubling down
-  string result = lookup(g_hardTotalsTable, column, row, "hardTotalsTable");
+  string result = lookup(g_hardTotalsMap, column, row);
   if(result == "S") {
     return stay;
   } else if (result == "H") {
@@ -115,7 +61,7 @@ action getHardTotalsAction(gamestate g, int stackIndex, float trueCount) {
   return stay;
 }
 
-action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
+action getSoftTotalsAction(gamestate& g, int stackIndex, float trueCount) {
   //if the player just has an ace, must hit
   if(g.perceivedStacks[stackIndex].size() == 1) {
     if(getEffectiveCard(g.perceivedStacks[stackIndex][0]) == _A) {
@@ -144,7 +90,7 @@ action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
 
   string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
   string row = to_string(nonAceTotal);
-  string result = lookup(g_softTotalsTable, column, row, "softTotalsTable");
+  string result = lookup(g_softTotalsMap, column, row);
 
   //!!! add functionality for doubling down
   if(result == "S") {
@@ -167,7 +113,7 @@ action getSoftTotalsAction(gamestate g, int stackIndex, float trueCount) {
   return stay;
 }
 
-bool shouldPlayerSplit(gamestate g, int stackIndex) {
+bool shouldPlayerSplit(gamestate& g, int stackIndex) {
   if(g.stacks[stackIndex].size() != 2) {
     throw std::invalid_argument("getSplitAction() called but the stack doesn't have exactly two cards.");
   }
@@ -179,7 +125,7 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
 
   string column = getEffectiveCardName(getEffectiveCard(g.dealersPerceivedCards[0]));
   string row = getEffectiveCardName(getEffectiveCard(g.perceivedStacks[stackIndex][0]));
-  string result = lookup(g_pairSplittingTable, column, row, "pairSplittingTable");
+  string result = lookup(g_pairSplittingMap, column, row);
   if(result == "Y" || result == "Yn") {
     return 1;
   } else {
@@ -187,7 +133,7 @@ bool shouldPlayerSplit(gamestate g, int stackIndex) {
   }
 }
 
-bool shouldUseHardTotals(gamestate g, int stackIndex){
+bool shouldUseHardTotals(gamestate& g, int stackIndex){
   bool shouldHardTotal = true;
   for(int i = 0; i < g.perceivedStacks[stackIndex].size(); i++) {
     if(getEffectiveCard(g.perceivedStacks[stackIndex][i]) == _A) {
@@ -197,7 +143,7 @@ bool shouldUseHardTotals(gamestate g, int stackIndex){
   return shouldHardTotal;
 }
 
-bool shouldPlayerSurrender(gamestate g, int stackIndex) {
+bool shouldPlayerSurrender(gamestate& g, int stackIndex) {
   int playerSum = 0;
   for(auto n : g.stacks[stackIndex]) {
     playerSum+=getEffectiveCardValue(getEffectiveCard(n));
@@ -213,7 +159,7 @@ bool shouldPlayerSurrender(gamestate g, int stackIndex) {
   string row = to_string(playerSum);
   string column = getEffectiveCardName(getEffectiveCard(dealerCard));
 
-  string result = lookup(g_lateSurrenderTable, column, row, "lateSurrenderTable");
+  string result = lookup(g_lateSurrenderMap, column, row);
   if(result == "Y") {return true;} else {return false;}
 }
 
@@ -221,9 +167,9 @@ bool shouldPlayerInsure(float trueCount) {
   return (trueCount > 3);
 }
 
-action getActionFromDeviations(gamestate g, int stackIndex, float trueCount) {
+action getActionFromDeviations(gamestate& g, int stackIndex, float trueCount) {
   
-  for(deviation d : g_illustrious_18) {
+  for(deviation& d : g_illustrious_18) {
     if(  
         (!d.activeLessThan && trueCount > d.index)
         ||
@@ -231,13 +177,19 @@ action getActionFromDeviations(gamestate g, int stackIndex, float trueCount) {
         ) {
 
       if(d.useHandNotTotal) {
-        if(areStacksEffectivelyEqual(g.perceivedStacks[stackIndex], d.hand) && d.dealerUpCard == getEffectiveCard(g.dealersPerceivedCards[0])) {
+        if(d.dealerUpCard == getEffectiveCard(g.dealersPerceivedCards[0]) && areStacksEffectivelyEqual(g.perceivedStacks[stackIndex], d.hand)) {
+          if(d.result == split && g.stacks.size() >= G_MAX_STACKS){
+            return stay;
+          }
           return d.result;
         }
   
       } else {
         int sum = getLowSumOfStack(g.perceivedStacks[stackIndex]);
         if(sum == d.total && d.dealerUpCard == getEffectiveCard(g.dealersCards[0])) { 
+          if(d.result == split && g.stacks.size() >= G_MAX_STACKS){
+            return stay;
+          }
           return d.result;
 
         }
