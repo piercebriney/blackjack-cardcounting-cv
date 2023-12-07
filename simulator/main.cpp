@@ -43,12 +43,10 @@ int main() {
   c_matrix myMatrix = c_matrix(fileaddress);
 
   printf("Input matrix improvement coefficient (0->unchanged, 1->identity matrix):\n>");
-  float perfectness = 0;
+  float perfectness = 1.0;
   // cin >> perfectness;
 
   myMatrix.perfectify(perfectness);
-
-  myMatrix.printWeights();
 
   // player joseph;
   // joseph.setCountingMethod(HiLo);
@@ -80,10 +78,8 @@ int main() {
   //int hourlyWage = profit / (G_NUM_ROUNDS / G_NUM_ROUNDS_PER_HOUR);
   //cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
   
-  vector<float> profits;
  analysis a{myMatrix, rng};
- a.runTrials(10000, G_NUM_ROUNDS, rng, profits);
- a.printStats(profits);
+ a.runTrials(10000, G_NUM_ROUNDS, rng);
 
  // double x = a.getAverageProfit(10000, G_NUM_ROUNDS, rng);
  //a.testEpsilons(fileaddress);

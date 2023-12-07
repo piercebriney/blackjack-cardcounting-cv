@@ -6,14 +6,15 @@
 using namespace std;
 
 analysis::analysis(c_matrix& mat, Rng& rng){
-    player1.setCountingMethod(HiOpt2);
+    player1.setCountingMethod(HiLo);
     player1.setConfusionMatrix(mat);
     shoe1.reset(rng);
     dealer1.setShoe(shoe1);
 }
 
-void analysis::runTrials(int numTrials, int numRounds, Rng& rng, vector<float>& profits){
-    profits.resize(numTrials);
+void analysis::runTrials(size_t numTrials, size_t numRounds, Rng& rng){
+    long sum = 0;
+    long squares = 0;
 
     #pragma omp parallel
     {
@@ -26,40 +27,22 @@ void analysis::runTrials(int numTrials, int numRounds, Rng& rng, vector<float>& 
         pcg64 temp_rng{copy(), (__int128 unsigned)stream};
         Rng r{(__int128 unsigned)temp_rng() << 64 | (__int128 unsigned)temp_rng()};
 
-        #pragma omp for
+        #pragma omp for reduction(+:sum, squares)
         for (size_t t = 0; t < numTrials; t++) {
             p.resetAll();
             s.reset(r);
-            int initialBankRoll = p.getBankroll();
-            for(int i = 0; i < numRounds; i++){
+            long initialBankRoll = p.getBankroll();
+            for (size_t i = 0; i < numRounds; i++){
                 d.playRound(p, g, r, false);
             }
-            float profit = p.getBankroll() - initialBankRoll;
-            profits[t] = profit;
+            long profit = p.getBankroll() - initialBankRoll;
+            sum += profit;
+            squares += profit * profit;
         }
     }
-}
-
-void analysis::printStats(vector<float>& profits){
-    float sum = 0.0;
-    float squares = 0.0;
-    size_t n = profits.size();
-
-    #pragma omp parallel for reduction (+:sum)
-    for (size_t i = 0; i < n; ++i) {
-        sum = sum + profits[i];
-    }
-
-    float mean = sum / n;
-
-    #pragma omp parallel for reduction (+:squares)
-    for (size_t i = 0; i < n; i++){
-        float diff = profits[i] - mean;
-        float square = diff * diff;
-        squares = squares + square;
-    }
-    float variance = squares / (n - 1);
-    float stdev = sqrt(variance);
+    double mean = (double)sum / numTrials;
+    double variance = (double)squares / numTrials - mean * mean;
+    double stdev = sqrt(variance * ((double)numTrials / (numTrials - 1)));
     printf("mean %f stdev %f\n", mean, stdev);
 }
 
@@ -86,29 +69,7 @@ double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
     double avgProfit = totalProfit/numTrials;
     cout << "Player profit average over " << numTrials << " trials is " << totalProfit/numTrials << endl;
     cout << "Player hourly wage over " << numTrials << ": " << avgProfit / (G_NUM_ROUNDS / G_NUM_ROUNDS_PER_HOUR) << endl;
-    cout << "Standard Deviation is " << calcStandDev(profits) << endl;
     return totalProfit/numTrials;
-}
-
-
-
-float analysis::calcStandDev(vector<float>& profits){
-    float sum = 0.0;
-    float mean = 0.0;
-    float variance = 0.0;
-
-    for(float profit : profits){
-        sum += profit;
-    }
-    mean = sum/profits.size();
-
-    for(int i = 0; i < profits.size(); i++){
-        variance += pow(profits[i] - mean, 2);
-    }
-    variance /= profits.size();
-
-    return sqrt(variance);
-
 }
 
 void analysis::testEpsilons(string filestr, Rng& rng){

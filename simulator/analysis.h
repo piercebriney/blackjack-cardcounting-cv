@@ -14,9 +14,7 @@ class analysis {
     public:
         analysis(c_matrix& m, Rng& rng);
         double getAverageProfit(int numTrials, int numRounds, Rng& rng);
-        void runTrials(int numTrials, int numRounds, Rng& rng, std::vector<float>& profits);
-        void printStats(std::vector<float>& profits);
-        float calcStandDev(std::vector<float>& profits);
+        void runTrials(size_t numTrials, size_t numRounds, Rng& rng);
         void testEpsilons(std::string filestr, Rng& rng);
         void varyConfusionMatrices(std::vector<c_matrix>& mats, int numTrials, int numRounds, Rng& rng);
 

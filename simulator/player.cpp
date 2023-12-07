@@ -17,15 +17,15 @@ card player::seeCard(card a, Rng& rng) {
   return perceivedCard;
 }
 
-float player::getBankroll() {
+long player::getBankroll() {
   return bankroll;
 }
 
-void player::getMoney(float a) {
+void player::getMoney(long a) {
   bankroll += a;
 }
 
-void player::loseMoney(float a) {
+void player::loseMoney(long a) {
   bankroll -= a;
 }
 
@@ -44,7 +44,7 @@ void player::resetAll(){
 }
 
 //if the player doesn't have an advantage, do the minimum bet
-int player::getBet() {
+long player::getBet() {
   float trueCount;
 
   //this is not quite how humans calculate decks remaining!

@@ -305,6 +305,9 @@ matrixCard getMatrixCard(card a) {
       return MA;
 
   }
+  std::string s{"invalid card in getMatrixCard: "};
+  s += std::to_string(a);
+  throw std::runtime_error(s);
 }
 
 card getCard(matrixCard a) {
@@ -327,6 +330,8 @@ card getCard(matrixCard a) {
       return _8S;
     case M9:
       return _9S;
+    case M10:
+      return _10S;
     case MJ:
       return _JS;
     case MQ:
@@ -334,6 +339,9 @@ card getCard(matrixCard a) {
     case MK:
       return _KS;
   }
+  std::string s{"invalid card in getCard: "};
+  s += std::to_string(a);
+  throw std::runtime_error(s);
 }
 
 float getCountFromCard(card a, countingMethod b) {
