@@ -3,7 +3,7 @@
 #include "params.h"
 #include <vector>
 #include <string>
-#include "pcg_random.hpp"
+#include "pcg/pcg_random.hpp"
 #include <array>
 
     

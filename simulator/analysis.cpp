@@ -46,7 +46,7 @@ void analysis::runTrials(size_t numTrials, size_t numRounds, Rng& rng){
     double mean = (double)sum / numTrials;
     double variance = (double)squares / numTrials - mean * mean;
     double stdev = sqrt(variance * ((double)numTrials / (numTrials - 1)));
-    printf("mean %f stdev %f\n", mean, stdev);
+    printf("Mean: $%.2f\n Standard deviation: %.2f\n", mean, stdev);
 }
 
 double analysis::getAverageProfit(int numTrials, int numRounds, Rng& rng){
