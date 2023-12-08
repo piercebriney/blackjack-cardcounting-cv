@@ -23,8 +23,8 @@ int main() {
   Rng rng{0};
   if(seedSTR.size() == 0) {
     pcg_extras::seed_seq_from<std::random_device> seed_source;
-    // rng = Rng{seed_source};
-    // cout << "Using randomized initial state " << rng << endl;
+    rng = Rng{seed_source};
+    cout << "Using randomized initial state " << rng << endl;
   } else {
     cout << "Using seed " << seedSTR << "." << endl;
     rng = Rng{(__int128 unsigned)stoi(seedSTR)};
@@ -47,6 +47,7 @@ int main() {
   // cin >> perfectness;
 
   myMatrix.perfectify(perfectness);
+  myMatrix.printWeights();
 
   // player joseph;
   // joseph.setCountingMethod(HiLo);
@@ -79,7 +80,7 @@ int main() {
   //cout << "That works out to about " << hourlyWage << " $ per hour." << endl;
   
  analysis a{myMatrix, rng};
- a.runTrials(10000, G_NUM_ROUNDS, rng);
+ a.runTrials(100000, G_NUM_ROUNDS, rng);
 
  // double x = a.getAverageProfit(10000, G_NUM_ROUNDS, rng);
  //a.testEpsilons(fileaddress);

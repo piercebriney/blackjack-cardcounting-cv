@@ -82,8 +82,11 @@ c_matrix::c_matrix(string fileaddress) {
         for(int j = 0; j < 13; j++) {
           rowSum += weights[i][j];
         }
-        for(int j = 0; j < 13; j++) {
-          weights[i][j] /= rowSum;
+        // don't divide by zero for nan
+        if (rowSum > 0.0) {
+            for(int j = 0; j < 13; j++) {
+              weights[i][j] /= rowSum;
+            }
         }
     }
 }

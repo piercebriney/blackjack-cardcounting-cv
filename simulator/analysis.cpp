@@ -15,6 +15,8 @@ analysis::analysis(c_matrix& mat, Rng& rng){
 void analysis::runTrials(size_t numTrials, size_t numRounds, Rng& rng){
     long sum = 0;
     long squares = 0;
+    vector<long> profits;
+    profits.resize(numTrials);
 
     #pragma omp parallel
     {
@@ -38,6 +40,7 @@ void analysis::runTrials(size_t numTrials, size_t numRounds, Rng& rng){
             long profit = p.getBankroll() - initialBankRoll;
             sum += profit;
             squares += profit * profit;
+            profits[t] = profit;
         }
     }
     double mean = (double)sum / numTrials;
