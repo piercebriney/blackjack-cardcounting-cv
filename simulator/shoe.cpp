@@ -5,6 +5,10 @@
 
 using namespace std;
 
+shoe::shoe(int _decks): decks(_decks) {
+
+}
+
 void shoe::printContents() {
   for(card n : contents) {
     cout << getCardName(n) << endl;
@@ -23,7 +27,7 @@ void shoe::shuffle(Rng& rng) {
 
 void shoe::reset(Rng& rng) {
   this->contents.clear();
-  for(int i = 0; i < G_NUM_DECKS; i++) {
+  for(int i = 0; i < decks; i++) {
     this->addDeck();
   }
   this->shuffle(rng);

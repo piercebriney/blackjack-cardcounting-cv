@@ -6,12 +6,7 @@
 
 using namespace std;
 
-dealer::dealer(){
-
-}
-
-dealer::dealer(shoe myShoe){
-  setShoe(myShoe);
+dealer::dealer(shoe& s): herShoe(s) {
 }
 
 int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
@@ -233,14 +228,10 @@ int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
   p.seeCard(d, rng);
 
   //if the player doesn't have enough money to keep playing, kick them out
-  if(p.getBankroll() < G_MINIMUM_BET) {
+  if(p.getBankroll() < p.min_bet) {
     return 1;
   }
 
 
   return 0;
-}
-
-void dealer::setShoe(shoe myShoe){
-  herShoe = myShoe;
 }

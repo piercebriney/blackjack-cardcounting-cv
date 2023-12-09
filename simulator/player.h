@@ -11,13 +11,16 @@ class player {
   int cardsCounted = 0;
 
   int decks = G_NUM_DECKS;
-  int bankroll = G_STARTING_BANKROLL;
+  long bankroll = G_STARTING_BANKROLL;
+  long starting_bankroll = G_STARTING_BANKROLL;
+  long max_bet = G_MAXIMUM_BET;
   countingMethod hisCountingMethod = HiLo;
 
   c_matrix hisConfusionMatrix;
 
 public:
-  player();
+  long min_bet = G_MINIMUM_BET;
+  player(int _decks, long _starting_bankroll, long _min_bet, long max_bet);
   card seeCard(card a, Rng& rng);
   void resetCount();
   long getBet();

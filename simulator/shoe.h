@@ -7,8 +7,10 @@
 
 class shoe {
   std::vector<card> contents;
+  int decks = G_NUM_DECKS;
 
 public:
+  shoe(int _decks);
   void reset(Rng& rng); //reset the shoe based on G_NUM_DECKS
   void shuffle(Rng& rng);
   void addDeck();
