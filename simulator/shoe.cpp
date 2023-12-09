@@ -1,7 +1,9 @@
 #include "common.h"
 #include "shoe.h"
+#include <random>
 #include <algorithm>
 #include <iostream>
+#include "pcg/randutils.hpp"
 
 using namespace std;
 
@@ -22,7 +24,11 @@ void shoe::addDeck() {
 }
 
 void shoe::shuffle(Rng& rng) {
-  std::random_shuffle(contents.begin(), contents.end(), rng);
+    // https://www.geeksforgeeks.org/shuffle-a-given-array-using-fisher-yates-shuffle-algorithm/
+    for (int i = contents.size() - 1; i > 0; i--) {
+        int j = rng(i + 1);
+        std::swap(contents[i], contents[j]);
+    }
 }
 
 void shoe::reset(Rng& rng) {
