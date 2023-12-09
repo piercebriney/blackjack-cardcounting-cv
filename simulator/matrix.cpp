@@ -60,9 +60,6 @@ c_matrix::c_matrix() {
 }
 
 c_matrix::c_matrix(string fileaddress) {
-
-  cout << "Loading matrix " << fileaddress << " ..." << endl;
-
   ifstream input(fileaddress);
   string line;
   int i = 0;

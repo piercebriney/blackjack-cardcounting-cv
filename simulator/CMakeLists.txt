@@ -4,7 +4,7 @@ project(simulator LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE Release)
 
-add_executable(simulator analysis.cpp dealer.cpp matrix.cpp shoe.cpp common.cpp main.cpp player.cpp strategy.cpp)
+add_executable(simulator dealer.cpp matrix.cpp shoe.cpp common.cpp main.cpp player.cpp strategy.cpp)
 
 include(FetchContent)
 FetchContent_Declare(
