@@ -12,11 +12,11 @@ class analysis {
         shoe shoe1;
         dealer dealer1;
     public:
-        analysis(c_matrix m);
-        double getAverageProfit(int numTrials, int numRounds);
-        float calcStandDev(std::vector<float> profits);
-        void testEpsilons(std::string filestr);
-        void varyConfusionMatrices(std::vector<c_matrix> mats, int numTrials, int numRounds);
+        analysis(c_matrix& m, Rng& rng);
+        double getAverageProfit(int numTrials, int numRounds, Rng& rng);
+        void runTrials(size_t numTrials, size_t numRounds, Rng& rng);
+        void testEpsilons(std::string filestr, Rng& rng);
+        void varyConfusionMatrices(std::vector<c_matrix>& mats, int numTrials, int numRounds, Rng& rng);
 
 };
 

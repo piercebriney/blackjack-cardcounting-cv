@@ -3,7 +3,11 @@
 #include "params.h"
 #include <vector>
 #include <string>
+#include "pcg/pcg_random.hpp"
+#include <array>
 
+    
+typedef pcg64_fast Rng;
 // print value
 #define PRINT(a)                          \
 {                                         \
@@ -21,7 +25,7 @@ enum matrixCard {MA, M2, M3, M4, M5, M6, M7, M8, M9, M10, MJ, MQ, MK};
 
 enum action {hit, stay, split, doubledown, surrender, voidaction};
 
-extern std::vector<std::vector<int>>g_countingMethods;
+extern std::vector<std::array<int, 10>>g_countingMethods;
 
 enum countingMethod {HiLo, HiOpt2};
 
@@ -52,6 +56,17 @@ struct gamestate {
   
   std::vector<stack> perceivedStacks; //these ones are filled by the player by perception
   stack dealersPerceivedCards;
+
+  gamestate() {
+  }
+
+  void clear() {
+      stacks.clear();
+      actions.clear();
+      dealersCards.clear();
+      perceivedStacks.clear();
+      dealersPerceivedCards.clear();
+  }
 };
 
 struct deviation {
@@ -64,21 +79,21 @@ struct deviation {
   bool activeLessThan = 0; //activate if it's tc is less than index
 };
 
-void printPlayerCards(gamestate g, int stackIndex);
+void printPlayerCards(gamestate& g, int stackIndex);
 
-void printStack(stack s);
+void printStack(stack& s);
 
 bool isBlackjack(card a, card b);
 
-bool areStacksEqual(stack a, stack b);
+bool areStacksEqual(stack& a, stack& b);
 
-bool areStacksEffectivelyEqual(stack a, stack b);
+bool areStacksEffectivelyEqual(stack& a, stack& b);
 
 //count cards so that they are as high as possible without going over 21
-int getIdealCount(stack s);
+int getIdealCount(stack& s);
 
 card getRandomCard();
 
-int getLowSumOfStack(stack a);
+int getLowSumOfStack(stack& a);
 
 #endif

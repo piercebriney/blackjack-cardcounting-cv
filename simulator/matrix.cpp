@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include "matrix.h"
+#include <random>
 
 using namespace std;
 
@@ -33,15 +34,6 @@ float c_matrix::getPerception(matrixCard real, matrixCard perceived) {
   return weights[real][perceived];
 }
 
-void c_matrix::allocate() {
-  for(int i = 0; i < 13; i++) {
-    weights.push_back({});
-    for(int j = 0; j < 13; j++) {
-      weights[weights.size() - 1].push_back({});
-    }
-  }
-}
-
 int c_matrix::verify() {
   const float tolerance = 0.0001;
   //make sure that each row adds up to roughly one
@@ -65,11 +57,9 @@ int c_matrix::verify() {
 }
 
 c_matrix::c_matrix() {
-  this->allocate();
 }
 
 c_matrix::c_matrix(string fileaddress) {
-  this->allocate();
 
   cout << "Loading matrix " << fileaddress << " ..." << endl;
 
@@ -86,22 +76,25 @@ c_matrix::c_matrix(string fileaddress) {
     i++;
   }
 
-
   //normalize
   for(int i = 0; i < 13; i++) {
     float rowSum = 0;
-    for(int j = 0; j < 13; j++) {
-      rowSum += weights[i][j];
+        for(int j = 0; j < 13; j++) {
+          rowSum += weights[i][j];
+        }
+        // don't divide by zero for nan
+        if (rowSum > 0.0) {
+            for(int j = 0; j < 13; j++) {
+              weights[i][j] /= rowSum;
+            }
+        }
     }
-    for(int j = 0; j < 13; j++) {
-      weights[i][j] /= rowSum;
-    }
-  }
 }
 
-card c_matrix::perceive(card real) {
+card c_matrix::perceive(card real, Rng& rng) {
+  std::uniform_real_distribution<float> d(0.0,1.0);
+  float randomness = d(rng);
   matrixCard realMatrixCard = getMatrixCard(real);
-  float randomness = ( (double) rand() / RAND_MAX );
   float sumOfOdds = 0;
   //cout << "Randomness is " << randomness << endl;
 
@@ -111,7 +104,7 @@ card c_matrix::perceive(card real) {
     }
     sumOfOdds += getPerception(realMatrixCard, (matrixCard)(i));
   }
-  return getCard(MK);
+  return getCard((matrixCard)12);
 }
 
 
