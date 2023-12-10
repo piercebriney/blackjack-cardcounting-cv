@@ -38,6 +38,15 @@ void save_profits(std::string& path, std::vector<long>& profits) {
     fclose(f);
 }
 
+// https://stackoverflow.com/questions/874134/find-out-if-string-ends-with-another-string-in-c
+bool ends_with(std::string& s, std::string& ending) {
+    if (s.length() >= ending.length()) {
+        return (0 == s.compare(s.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
 void _main(MyArgs& args) {
     Rng rng;
     if (args.seed == 0) {
@@ -50,7 +59,12 @@ void _main(MyArgs& args) {
     commonInit();
     loadStrategy();
 
+    std::string ending{".txt"};
+
     for (auto& matrix_path: args.matrix_paths) {
+        if (!ends_with(matrix_path, ending)) {
+            continue;
+        }
         std::cout << "Loading " << matrix_path << std::endl;
         c_matrix m{matrix_path};
         m.perfectify(args.perfectness);
