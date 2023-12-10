@@ -15,6 +15,14 @@ sudo apt-get update -y
 sudo apt-get install build-essential cmake libomp-dev -y
 ```
 
+A `Dockerfile` is also provided; to run the simulator in Docker, run:
+```
+docker build -t simulator .
+docker run -it simulator
+# this is inside the container
+./build/simulator --help
+```
+
 ### Building
 Run the following commands while in the `simulator` directory:
 ```
