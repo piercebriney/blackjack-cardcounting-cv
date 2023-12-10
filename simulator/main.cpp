@@ -97,7 +97,12 @@ void _main(MyArgs& args) {
                 s.reset(r);
                 long initialBankRoll = p.getBankroll();
                 for (size_t i = 0; i < args.num_rounds; i++){
-                    d.playRound(p, g, r, false);
+                    try {
+                        d.playRound(p, g, r, false);
+                    } catch (std::runtime_error& e) {
+                        // ran out of cards
+                        break;
+                    }
                 }
                 long profit = p.getBankroll() - initialBankRoll;
                 sum += profit;
