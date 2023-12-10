@@ -11,6 +11,7 @@ This is the brain of the card counting device and is intended to run remotely on
 - CUDA >= 11.4
 - TensorRT >= 8.4
 - OpenCV >= 4.7 with GTK support
+- YOLOv8 PyTorch model trained on pictures of size 1280x1280
 
 #### OpenCV
 If your system's OpenCV installation does not support GTK (required for viewing camera footage), you must compile from source. Refer to the [official documentation](https://docs.opencv.org/4.x/d2/de6/tutorial_py_setup_in_ubuntu.html) for installation.
@@ -56,6 +57,13 @@ Here's an example using engine file `epoch35_fp16.engine` and IPv4 address `10.2
 ./compute_device ../epoch35_fp16.engine http://10.228.58.178:8000/stream.mjpg 10.228.58.178 8889
 ```
 
-The program will print out the perceived cards and the actions that the player should take. In addition, a window of the camera's view should be displayed. The dealer's cards will be boxed in red, and the player's cards will be boxed in green. The horizontal blue line delimits the boundary between the dealer's and player's cards. Here's an example:
+The program will print out the perceived cards and the actions that the player should take. These actions will be one of the following:
+- Hit
+- Stand
+- Double-down
+- Surrender
+
+In addition, a window of the camera's view will be displayed. Within the window, the dealer's cards will be boxed in red, and the player's cards will be boxed in green. The horizontal blue line delimits the boundary between the dealer's and player's cards. Here's an example:
 ![](./demo.png)
 
+When the cards are cleared from camera's view, the program will assume that the round is over and indicate the betting size for the next round. The program will run indefinitely until the user presses "q".
