@@ -50,8 +50,7 @@ void shoe::testBalancedCounting() {
 
 card shoe::drawCard() {
   if (contents.size() == 0) {
-    cout << "EMPTY CONTENTS\n";
-    abort();
+      throw std::runtime_error{"out of cards"};
   }
   card ret = contents.back();
   contents.pop_back();
