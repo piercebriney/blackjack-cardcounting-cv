@@ -3,3 +3,7 @@ build
 .vscode
 /simulator/out.exe
 *.output
+/simulator 
+.DS_Store
+simulator/DS_Store
+simulator/simulator
