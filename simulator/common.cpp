@@ -127,7 +127,7 @@ string getCardName(card a) {
     case _AD:
       return "AD";
   }
-  return "ER";
+  throw std::logic_error{"invalid card in getCardName()"};
 }
 
 string getEffectiveCardName(effectiveCard a) {
@@ -153,7 +153,7 @@ string getEffectiveCardName(effectiveCard a) {
     case _T:
       return "T";
   }
-  return "ER";
+  throw std::logic_error{"invalid effective card in getEffectiveCardName()"};
 }
 
 string getEffectiveCardName(card a) {
@@ -307,7 +307,7 @@ matrixCard getMatrixCard(card a) {
   }
   std::string s{"invalid card in getMatrixCard: "};
   s += std::to_string(a);
-  throw std::runtime_error(s);
+  throw std::logic_error(s);
 }
 
 card getCard(matrixCard a) {
@@ -341,7 +341,7 @@ card getCard(matrixCard a) {
   }
   std::string s{"invalid card in getCard: "};
   s += std::to_string(a);
-  throw std::runtime_error(s);
+  throw std::logic_error(s);
 }
 
 float getCountFromCard(card a, countingMethod b) {
