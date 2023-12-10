@@ -9,7 +9,10 @@
 int main(int argc, char** argv) {
     cudaSetDevice(0);
 
-    ASSERT(argc == 5);
+    if (argc != 5) {
+        puts("Usage: compute_device <ENGINE PATH> <VIDEO URL> <PI IP> <GPIO PORT>");
+        return 1;
+    }
     Timer t;
     char* bridge_ip = argv[3];
     unsigned short bridge_port = std::stoi(argv[4]);
