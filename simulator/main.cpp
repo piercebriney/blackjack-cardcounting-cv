@@ -22,7 +22,6 @@ struct MyArgs : public argparse::Args {
     long& min_bet = kwarg("min", "The minimum betting amount in dollars").set_default(G_MINIMUM_BET);
     long& max_bet = kwarg("max", "The maximum betting amount in dollars").set_default(G_MAXIMUM_BET);
     long& starting_bankroll = kwarg("bankroll", "The starting bankroll amount in dollars").set_default(G_STARTING_BANKROLL);
-    long& rounds_per_hour = kwarg("rate", "The amount of rounds played per hour").set_default(G_NUM_ROUNDS_PER_HOUR);
     bool& save = flag("save", "Save the raw profits to a file named <matrix path>.output").set_default(false);
 };
 
@@ -65,8 +64,8 @@ void _main(MyArgs& args) {
         if (!ends_with(matrix_path, ending)) {
             continue;
         }
-        std::cout << "Loading " << matrix_path << std::endl;
         c_matrix m{matrix_path};
+        std::cout << "Loading " << matrix_path << std::endl;
         m.perfectify(args.perfectness);
         
         long sum = 0;

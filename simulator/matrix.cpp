@@ -61,6 +61,11 @@ c_matrix::c_matrix() {
 
 c_matrix::c_matrix(string fileaddress) {
   ifstream input(fileaddress);
+  if (input.fail()) {
+      string msg{"unable to load confusion matrix: "};
+      msg += fileaddress;
+      throw std::runtime_error{msg};
+  }
   string line;
   int i = 0;
   for(string line; getline(input, line);) {
