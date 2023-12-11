@@ -3,7 +3,7 @@ The backgrounds used to generate the card data are stored on Google Drive. They 
 Prerequisites:
 Python3 installed
 
-Run `./setup.sh` to create a virtual environment and install the required packages. You will need to re-run this script if you update the DATASET_PATH environment variable.
+Run `./setup.sh` to create a virtual environment and install the required packages. You will need to re-run this script if you update the DATASETS_ROOT environment variable.
 
 Before any of the generation scripts, modify the environment variables in .env
 
