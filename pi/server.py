@@ -5,14 +5,11 @@ import socket
 import sys
 import subprocess
 
-led = 17
 buzzer = 21
 button = 22
 
-input.listen_to_input(button, 1, lambda: conn.sendall(b"\x00"))
 
 def emit(on, off):
-    output.output_signal_sync(led, on)
     output.output_signal_sync(buzzer, on)
     sleep(off)
 
@@ -64,6 +61,7 @@ def main():
     while True:
         print("waiting on accept")
         conn, _ = s.accept()
+        input.listen_to_input(button, 1, lambda: conn.sendall(b"\x00"))
         while True:
             print("waiting on recv")
             msg = conn.recv(2)

@@ -1,2 +1,0 @@
--r src/pi_io/requirements.txt
-RPi.GPIO==0.7.1

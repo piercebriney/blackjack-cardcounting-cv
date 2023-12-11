@@ -1,0 +1,2 @@
+SimulRPi==0.1.0a0
+RPi.GPIO==0.7.1
