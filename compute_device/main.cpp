@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 
         // printf("read %d process %d\n", read_ms, process_ms);
         // printf("seen nothing for %d ms\n", seen_nothing_ms);
-        if (seen_nothing_ms > 1000 && g.is_actionable()) {
+        if (seen_nothing_ms > 1000 && g.is_actionable_loose()) {
             puts("CLEAR");
             seen_nothing_ms = 0;
             int bet_value = g.p.getBet();
