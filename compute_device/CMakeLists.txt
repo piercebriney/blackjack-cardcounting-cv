@@ -23,8 +23,9 @@ message(STATUS "OpenCV Libraries: \n${OpenCV_LIBRARIES}\n")
 message(STATUS "OpenCV Headers: \n${OpenCV_INCLUDE_DIRS}\n")
 
 # TensorRT
-set(TensorRT_INCLUDE_DIRS /home/nhwn/yolo/TensorRT-8.6.1.6/include)
-set(TensorRT_LIBRARIES /home/nhwn/yolo/TensorRT-8.6.1.6/lib)
+# TENSOR_HOME=/home/nhwn/yolo/TensorRT-8.6.1.6
+set(TensorRT_INCLUDE_DIRS "$ENV{TENSOR_HOME}/include")
+set(TensorRT_LIBRARIES "$ENV{TENSOR_HOME}/lib")
 # set(TensorRT_INCLUDE_DIRS /usr/include/x86_64-linux-gnu)
 # set(TensorRT_LIBRARIES /usr/lib/x86_64-linux-gnu)
 
