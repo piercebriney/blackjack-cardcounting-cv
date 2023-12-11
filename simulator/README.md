@@ -49,7 +49,6 @@ Options:
             --min : The minimum betting amount in dollars [default: 25]
             --max : The maximum betting amount in dollars [default: 2500]
        --bankroll : The starting bankroll amount in dollars [default: 10000]
-           --rate : The amount of rounds played per hour [default: 100]
            --save : Save the raw profits to a file named <matrix path>.output [implicit: "true", default: false]
         -?,--help : print help [implicit: "true", default: false]
 ```
