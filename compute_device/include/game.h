@@ -46,6 +46,9 @@ struct Game {
     bool is_actionable() {
         return g.perceivedStacks[0].size() >= 2 && g.dealersCards.size() == 1;
     }
+    bool is_actionable_loose() {
+        return g.perceivedStacks[0].size() >= 2 && g.dealersCards.size() > 0;
+    }
     void process(FrameProcessor& fp, Bridge& b) {
         fp.extract([&](Object& o, bool dealer) {
             card c = LABEL_TO_CARD[o.label];
