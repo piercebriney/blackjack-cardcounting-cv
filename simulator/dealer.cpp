@@ -75,7 +75,7 @@ int dealer::playRound(player& p, gamestate& g, Rng& rng, bool v) {
   if(playerGotBJ && !dealerGotBJ) {
     //payout is 3:2
     //cout << "RESULT: Player got a blackjack." << endl;
-    int profit = playerBet * 0.5;
+    int profit = playerBet * 1.5;
     p.getMoney(playerBet + profit);
     return 0;
   }
