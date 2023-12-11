@@ -5,6 +5,10 @@
 
 using namespace std;
 
+shoe::shoe(int _decks): decks(_decks) {
+
+}
+
 void shoe::printContents() {
   for(card n : contents) {
     cout << getCardName(n) << endl;
@@ -17,15 +21,20 @@ void shoe::addDeck() {
   }
 }
 
-void shoe::shuffle() {
-  std::random_shuffle(contents.begin(), contents.end(), RNG());
+void shoe::shuffle(Rng& rng) {
+    // https://www.geeksforgeeks.org/shuffle-a-given-array-using-fisher-yates-shuffle-algorithm/
+    for (int i = contents.size() - 1; i > 0; i--) {
+        int j = rng(i + 1);
+        std::swap(contents[i], contents[j]);
+    }
 }
 
-void shoe::reset() {
-  for(int i = 0; i < G_NUM_DECKS; i++) {
+void shoe::reset(Rng& rng) {
+  this->contents.clear();
+  for(int i = 0; i < decks; i++) {
     this->addDeck();
   }
-  this->shuffle();
+  this->shuffle(rng);
 }
 
 void shoe::testBalancedCounting() {
@@ -40,6 +49,9 @@ void shoe::testBalancedCounting() {
 }
 
 card shoe::drawCard() {
+  if (contents.size() == 0) {
+      throw std::runtime_error{"out of cards"};
+  }
   card ret = contents.back();
   contents.pop_back();
   return ret;

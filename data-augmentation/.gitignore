@@ -5,3 +5,4 @@ datasets/*
 confusion-matrices/*
 runs/*
 model.pt
+output/*

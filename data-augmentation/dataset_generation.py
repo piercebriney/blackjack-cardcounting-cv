@@ -326,6 +326,7 @@ def card_occludes_other_cards(new_annotation, previous_annotations):
     return False
 
 def generate_image(card_image_paths, background_image_path, output_card_path, annotation_path, is_test_data=False, angle=None, distance=None):
+
     background_image = Image.open(background_image_path).convert("RGBA")
     background_width, background_height = background_image.size
 
@@ -347,6 +348,7 @@ def generate_image(card_image_paths, background_image_path, output_card_path, an
         while (not solution_found and attempts < 5):
             position_offset_x = 0 if is_test_data else random.randint(int(-0.3*background_width), int(0.3*background_width))
             position_offset_y = 0 if is_test_data else random.randint(int(-0.3*background_height), int(0.3*background_height))
+
             annotation = get_annotation(card_image, str.split(str.split(card_image_path, '/')[-1], '_')[0], position_offset_x, position_offset_y)
             solution_found = not card_occludes_other_cards(annotation, annotations_array)
             attempts += 1
@@ -368,7 +370,7 @@ def generate_image(card_image_paths, background_image_path, output_card_path, an
         background_image = add_gaussian_blur(background_image) if random.randint(0,1) == 1 else background_image
         background_image = adjust_hue(background_image) if random.randint(0,1) == 1 else background_image
         background_image = adjust_saturation(background_image) if random.randint(0,1) == 1 else background_image
-    
+        
     background_image = background_image.convert("RGB")
 
     background_image.save(output_card_path, 'JPEG')
@@ -378,6 +380,7 @@ def random_string(length=12):
     return ''.join(random.choice(letters) for _ in range(length))
 
 def make_directory(directory, safe=False):
+
     if not os.path.exists(directory):
         os.makedirs(directory)
         return

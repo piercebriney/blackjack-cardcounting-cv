@@ -11,28 +11,31 @@ class player {
   int cardsCounted = 0;
 
   int decks = G_NUM_DECKS;
-  int bankroll = G_STARTING_BANKROLL;
+  long bankroll = G_STARTING_BANKROLL;
+  long starting_bankroll = G_STARTING_BANKROLL;
+  long max_bet = G_MAXIMUM_BET;
   countingMethod hisCountingMethod = HiLo;
 
   c_matrix hisConfusionMatrix;
 
 public:
-  player();
-  card seeCard(card a);
+  long min_bet = G_MINIMUM_BET;
+  player(int _decks, long _starting_bankroll, long _min_bet, long max_bet);
+  card seeCard(card a, Rng& rng);
   void resetCount();
-  int getBet();
-  action getBasicStrategyAction(gamestate a);
-  action getAction(gamestate g, int stackIndex); //for a stack in a gamestate, will he hit, stay, surrender, etc.
+  long getBet();
+  action getBasicStrategyAction(gamestate& a);
+  action getAction(gamestate& g, int stackIndex); //for a stack in a gamestate, will he hit, stay, surrender, etc.
   bool takesInsurance();
   float getTrueCount();
-  float getBankroll();
-  void getMoney(float a);
-  void loseMoney(float a);
+  long getBankroll();
+  void getMoney(long a);
+  void loseMoney(long a);
   void setCountingMethod(countingMethod a);
-  void setConfusionMatrix(c_matrix a);
+  void setConfusionMatrix(c_matrix& a);
   void resetAll();
 
-  card perceive(card real);
+  card perceive(card real, Rng& rng);
 };
 
 #endif

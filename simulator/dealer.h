@@ -11,10 +11,8 @@ class dealer {
   private:
     shoe herShoe;
   public:
-    dealer();
-    dealer(shoe myShoe);
-    int playRound(player* a);
-    void setShoe(shoe myShoe);
+    dealer(shoe& s);
+    int playRound(player& a, gamestate& g, Rng& rng, bool v);
 };
 
 #endif

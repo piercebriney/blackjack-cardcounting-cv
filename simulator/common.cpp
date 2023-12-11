@@ -2,16 +2,17 @@
 #include <stdexcept>
 #include <iostream>
 #include <algorithm>
+#include <array>
 
 using namespace std;
 
-std::vector<std::vector<int>>g_countingMethods;
+std::vector<std::array<int, 10>>g_countingMethods;
 
 void commonInit() {
   //counting-methods are defined in this order:
   // A 2 3 4 5 6 7 8 9 10
-  vector<int> HiLo = {-1, 1, 1, 1, 1, 1, 0, 0, 0, -1}; //balanced
-  vector<int> HiOpt2 = {0, 1, 1, 2, 2, 1, 1, 0, 0, -2}; //balanced
+  std::array<int, 10> HiLo = {-1, 1, 1, 1, 1, 1, 0, 0, 0, -1}; //balanced
+  std::array<int, 10> HiOpt2 = {0, 1, 1, 2, 2, 1, 1, 0, 0, -2}; //balanced
   g_countingMethods.push_back(HiLo);
   g_countingMethods.push_back(HiOpt2);
 }
@@ -126,7 +127,7 @@ string getCardName(card a) {
     case _AD:
       return "AD";
   }
-  return "ER";
+  throw std::logic_error{"invalid card in getCardName()"};
 }
 
 string getEffectiveCardName(effectiveCard a) {
@@ -152,7 +153,7 @@ string getEffectiveCardName(effectiveCard a) {
     case _T:
       return "T";
   }
-  return "ER";
+  throw std::logic_error{"invalid effective card in getEffectiveCardName()"};
 }
 
 string getEffectiveCardName(card a) {
@@ -190,10 +191,161 @@ int getEffectiveCardValue(card a) {
   return getEffectiveCardValue(getEffectiveCard(a));
 }
 
+matrixCard getMatrixCard(card a) {
+  switch (a) {
+    case _2S:
+      return M2;
+    case _3S:
+      return M3;
+    case _4S:
+      return M4;
+    case _5S:
+      return M5;
+    case _6S:
+      return M6;
+    case _7S:
+      return M7;
+    case _8S:
+      return M8;
+    case _9S:
+      return M9;
+    case _10S:
+      return MJ;
+    case _JS:
+      return MJ;
+    case _QS:
+      return MQ;
+    case _KS:
+      return MK;
+    case _AS:
+      return MA;
+
+
+    case _2H:
+      return M2;
+    case _3H:
+      return M3;
+    case _4H:
+      return M4;
+    case _5H:
+      return M5;
+    case _6H:
+      return M6;
+    case _7H:
+      return M7;
+    case _8H:
+      return M8;
+    case _9H:
+      return M9;
+    case _10H:
+      return MJ;
+    case _JH:
+      return MJ;
+    case _QH:
+      return MQ;
+    case _KH:
+      return MK;
+    case _AH:
+      return MA;
+
+
+    case _2C:
+      return M2;
+    case _3C:
+      return M3;
+    case _4C:
+      return M4;
+    case _5C:
+      return M5;
+    case _6C:
+      return M6;
+    case _7C:
+      return M7;
+    case _8C:
+      return M8;
+    case _9C:
+      return M9;
+    case _10C:
+      return MJ;
+    case _JC:
+      return MJ;
+    case _QC:
+      return MQ;
+    case _KC:
+      return MK;
+    case _AC:
+      return MA;
+
+
+    case _2D:
+      return M2;
+    case _3D:
+      return M3;
+    case _4D:
+      return M4;
+    case _5D:
+      return M5;
+    case _6D:
+      return M6;
+    case _7D:
+      return M7;
+    case _8D:
+      return M8;
+    case _9D:
+      return M9;
+    case _10D:
+      return MJ;
+    case _JD:
+      return MJ;
+    case _QD:
+      return MQ;
+    case _KD:
+      return MK;
+    case _AD:
+      return MA;
+
+  }
+  std::string s{"invalid card in getMatrixCard: "};
+  s += std::to_string(a);
+  throw std::logic_error(s);
+}
+
+card getCard(matrixCard a) {
+  switch (a) {
+    case MA:
+      return _AS;
+    case M2:
+      return _2S;
+    case M3:
+      return _3S;
+    case M4:
+      return _4S;
+    case M5:
+      return _5S;
+    case M6:
+      return _6S;
+    case M7:
+      return _7S;
+    case M8:
+      return _8S;
+    case M9:
+      return _9S;
+    case M10:
+      return _10S;
+    case MJ:
+      return _JS;
+    case MQ:
+      return _QS;
+    case MK:
+      return _KS;
+  }
+  std::string s{"invalid card in getCard: "};
+  s += std::to_string(a);
+  throw std::logic_error(s);
+}
+
 float getCountFromCard(card a, countingMethod b) {
-  vector<int>* thisCountingMethod;
-  thisCountingMethod = &g_countingMethods[b];
-  return thisCountingMethod->at(getEffectiveCard(a));
+  return g_countingMethods[b].at(getEffectiveCard(a));
 }
 
 effectiveCard getEffectiveCard(card a) {
@@ -209,14 +361,14 @@ effectiveCard getEffectiveCard(card a) {
   return ret;
 }
 
-void printPlayerCards(gamestate g, int stackIndex){
+void printPlayerCards(gamestate& g, int stackIndex){
   for(card n : g.stacks[stackIndex]){
     cout << getCardName(n) << " ";
   }
   cout << endl;
 }
 
-void printStack(stack s) {
+void printStack(stack& s) {
   for(card c : s) {
     cout << getCardName(c) << " ";
   }
@@ -230,66 +382,55 @@ bool isBlackjack(card a, card b) {
     (getEffectiveCard(a) == _A  && getEffectiveCard(b) == _T);
 }
 
-int getIdealCount(stack s) {
-  stack nonAces;
-  stack aces;
-  for(auto c : s) {
-    if(getEffectiveCard(c) == _A) {
-      aces.push_back(c);
+int getIdealCount(stack& s) {
+    int aces = 0;
+    int hardTotal = 0;
+    for (auto c: s) {
+        effectiveCard eff = getEffectiveCard(c);
+        if (eff == _A) {
+            aces += 1;
+        } else {
+            hardTotal += getEffectiveCardValue(eff);
+        }
+    }
+    int softTotal = aces;
+    int validLowTotal = 0;
+    if (hardTotal + softTotal <= 21) {
+        validLowTotal = hardTotal + softTotal;
     } else {
-      nonAces.push_back(c);
+        return 22; //definitely bust
     }
-  }
-  int hardTotal = 0;
-  for(auto c : nonAces) {
-    hardTotal += getEffectiveCardValue(c);
-  }
 
-  int softTotal = 0;
-  softTotal = aces.size();
-  int validLowTotal = 0;
-  if(hardTotal + softTotal <= 21) {
-    validLowTotal = hardTotal + softTotal;
-  } else {
-    return 22; //definitely bust
-  }
-
-  //try to get the total higher by counting aces as 11 instead of 1
-  int validTotal = validLowTotal;
-  for(int i = 0; i < aces.size(); i++) {
-    int experimentalTotal = validTotal - 1 + 11;
-    if(experimentalTotal <= 21) {
-      validTotal = experimentalTotal;
+    //try to get the total higher by counting aces as 11 instead of 1
+    int validTotal = validLowTotal;
+    for (int i = 0; i < aces; i++) {
+        int experimentalTotal = validTotal - 1 + 11;
+        if (experimentalTotal <= 21) {
+            validTotal = experimentalTotal;
+        }
     }
-  }
-  return validTotal;
+    return validTotal;
 }
 
-card getRandomCard() {
-  return (card)(rand() % 52);
-}
-
-bool areStacksEqual(stack a, stack b) {
+bool areStacksEqual(stack& a, stack& b) {
   sort(a.begin(), a.end());
   sort(b.begin(), b.end());
   return a == b;
 }
 
-bool areStacksEffectivelyEqual(stack a, stack b) {
-  vector<effectiveCard> ea;
-  for(card c : a) {
-    ea.push_back(getEffectiveCard(c));
-  }
-  vector<effectiveCard> eb;
-  for(card c : b) {
-    eb.push_back(getEffectiveCard(c));
-  }
-  sort(ea.begin(), ea.end());
-  sort(eb.begin(), eb.end());
-  return ea == eb;
+std::array<int, 10> countEffectiveCards(stack& s) {
+    std::array<int, 10> arr{};
+    for (card c: s) {
+        arr[getEffectiveCard(c)] += 1;
+    }
+    return arr;
 }
 
-int getLowSumOfStack(stack a) {
+bool areStacksEffectivelyEqual(stack& a, stack& b) {
+    return countEffectiveCards(a) == countEffectiveCards(b);
+}
+
+int getLowSumOfStack(stack& a) {
   int sum = 0;
   for(card c : a) {
     sum += getEffectiveCardValue(c);
