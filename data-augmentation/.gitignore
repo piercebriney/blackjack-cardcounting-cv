@@ -1,3 +1,8 @@
 venv/*
 __pycache__/*
 output/*
+datasets/*
+confusion-matrices/*
+runs/*
+model.pt
+output/*

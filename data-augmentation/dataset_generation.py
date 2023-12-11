@@ -5,6 +5,11 @@ from multiprocessing import Pool
 import os
 import string
 import image_transformer
+from dotenv import load_dotenv
+import argparse
+import shutil
+
+load_dotenv()
 
 class_id_mapping = {
     'a': 0,
@@ -69,9 +74,9 @@ def rotate(image):
     return image.rotate(rotation_angle, expand=True)
 
 def modify_brightness(image):
-    brightness_factor = random.uniform(0.3, 1.8)
+    brightness=random.uniform(0.3, 1.8)
     enhancer = ImageEnhance.Brightness(image)
-    return enhancer.enhance(brightness_factor)
+    return enhancer.enhance(brightness)
 
 def modify_contrast(image):
     contrast_factor = random.uniform(0.9, 1.1)
@@ -186,15 +191,12 @@ def convert_to_yolo_format(coordinates, total_width, total_height):
     min_x, max_x = min(xs), max(xs)
     min_y, max_y = min(ys), max(ys)
 
-    # Calculate the bounding box's width and height
     width = max_x - min_x
     height = max_y - min_y
 
-    # Calculate the center of the bounding box
     x_center = min_x + width / 2
     y_center = min_y + height / 2
 
-    # Normalize these values
     x_center /= total_width
     y_center /= total_height
     width /= total_width
@@ -224,14 +226,12 @@ def find_corners_parallel(image, num_processes=8):
     if image.mode != 'RGBA':
         image = image.convert('RGBA')
 
-    # Splitting the image into segments
     segment_width = width // num_processes
     segments = [(image, i * segment_width, (i + 1) * segment_width) for i in range(num_processes)]
 
     with Pool(num_processes) as p:
         results = p.map(process_segment, segments)
 
-    # Combine results from all segments
     left = 10000000000
     top = 10000000000
     right = -1
@@ -313,7 +313,6 @@ def card_occludes_other_cards(new_annotation, previous_annotations):
     for prev_annotation in previous_annotations:
         _, prev_x_center, prev_y_center, prev_bb_width, prev_bb_height = prev_annotation
 
-        # Compute the coordinates of the intersection rectangle
         dx = min(new_x_center + new_bb_width / 2, prev_x_center + prev_bb_width / 2) - max(new_x_center - new_bb_width / 2, prev_x_center - prev_bb_width / 2)
         dy = min(new_y_center + new_bb_height / 2, prev_y_center + prev_bb_height / 2) - max(new_y_center - new_bb_height / 2, prev_y_center - prev_bb_height / 2)
 
@@ -326,7 +325,8 @@ def card_occludes_other_cards(new_annotation, previous_annotations):
                 return True
     return False
 
-def generate_image(card_image_paths, background_image_path, output_card_path, annotation_path, angle=None, distance=None):
+def generate_image(card_image_paths, background_image_path, output_card_path, annotation_path, is_test_data=False, angle=None, distance=None):
+
     background_image = Image.open(background_image_path).convert("RGBA")
     background_width, background_height = background_image.size
 
@@ -334,7 +334,8 @@ def generate_image(card_image_paths, background_image_path, output_card_path, an
     for card_image_path in card_image_paths:
         card_image = Image.open(card_image_path).convert("RGBA")
         card_image = resize_from_distance(background_image, card_image, distance) if distance is not None else resize(background_image, card_image)
-        #card_image = rotate(card_image)
+        if not is_test_data:
+            card_image = rotate(card_image)
 
         initial_card_width, initial_card_height = card_image.size
 
@@ -345,8 +346,9 @@ def generate_image(card_image_paths, background_image_path, output_card_path, an
         attempts = 0
         solution_found = False
         while (not solution_found and attempts < 5):
-            position_offset_x = 0 #random.randint(int(-0.3*background_width), int(0.3*background_width))
-            position_offset_y = 0 #random.randint(int(-0.3*background_height), int(0.3*background_height))
+            position_offset_x = 0 if is_test_data else random.randint(int(-0.3*background_width), int(0.3*background_width))
+            position_offset_y = 0 if is_test_data else random.randint(int(-0.3*background_height), int(0.3*background_height))
+
             annotation = get_annotation(card_image, str.split(str.split(card_image_path, '/')[-1], '_')[0], position_offset_x, position_offset_y)
             solution_found = not card_occludes_other_cards(annotation, annotations_array)
             attempts += 1
@@ -357,16 +359,18 @@ def generate_image(card_image_paths, background_image_path, output_card_path, an
     
     write_annotations(annotation_path, annotations_array)
 
-    #background_image = add_random_tint(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = add_random_tint(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = modify_brightness(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = modify_contrast(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = modify_saturation(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = add_gaussian_noise(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = add_salt_and_pepper_noise(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = add_gaussian_blur(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = adjust_hue(background_image) if random.randint(0,1) == 1 else background_image
-    #background_image = adjust_saturation(background_image) if random.randint(0,1) == 1 else background_image
+    if not is_test_data:
+        background_image = add_random_tint(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = add_random_tint(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = modify_brightness(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = modify_contrast(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = modify_saturation(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = add_gaussian_noise(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = add_salt_and_pepper_noise(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = add_gaussian_blur(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = adjust_hue(background_image) if random.randint(0,1) == 1 else background_image
+        background_image = adjust_saturation(background_image) if random.randint(0,1) == 1 else background_image
+        
     background_image = background_image.convert("RGB")
 
     background_image.save(output_card_path, 'JPEG')
@@ -375,31 +379,35 @@ def random_string(length=12):
     letters = string.ascii_letters + string.digits
     return ''.join(random.choice(letters) for _ in range(length))
 
+def make_directory(directory, safe=False):
 
-def make_directory(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
         return
     
+    if safe: return
+
     for filename in os.listdir(directory):
-                file_path = os.path.join(directory, filename)
-                try:
-                    if os.path.isfile(file_path):
-                        os.remove(file_path)
-                except Exception as e:
-                    print(f'Failed to delete {file_path}. Reason: {e}')
+        file_path = os.path.join(directory, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.remove(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f'Failed to delete {file_path}. Reason: {e}')
 
 def generate_test_data():
     cards_directory = 'iphone-deck'
-    background = 'black-bg.png'
-    output_image_directory = '../../../../Desktop/datasets/cards_2/images/test'
-    annotations_directory = '../../../../Desktop/datasets/cards_2/labels/test'
-    min_angle = 15
-    max_angle = 90
-    angle_step = 15
-    min_distance = 1
-    max_distance = 5
-    distance_step = 0.5
+    background = './backgrounds/black-bg.png'
+    output_image_directory = os.getenv('DATASETS_ROOT') + '/' + os.getenv('DATASET_PATH') + '/images/test'
+    annotations_directory = os.getenv('DATASETS_ROOT') + '/' + os.getenv('DATASET_PATH') + '/labels/test'
+    min_angle = float(os.getenv('MIN_ANGLE'))
+    max_angle = float(os.getenv('MAX_ANGLE'))
+    angle_step = float(os.getenv('ANGLE_STEP'))
+    min_distance = float(os.getenv('MIN_DISTANCE'))
+    max_distance = float(os.getenv('MAX_DISTANCE'))
+    distance_step = float(os.getenv('DISTANCE_STEP'))
 
     make_directory(output_image_directory)
     make_directory(annotations_directory)
@@ -411,19 +419,25 @@ def generate_test_data():
         if os.path.isfile(os.path.join(cards_directory, filename)):
             for angle in np.arange(min_angle, max_angle+angle_step, angle_step):
                 for distance in np.arange(min_distance, max_distance+distance_step, distance_step):
+                    modified_image_output_directory = output_image_directory + f'/{str(distance)}_{str(angle)}'
+                    modified_annotations_output_directory = annotations_directory + f'/{str(distance)}_{str(angle)}'
+                    make_directory(modified_image_output_directory, True)
+                    make_directory(modified_annotations_output_directory, True)
                     input_card_paths = [f'{cards_directory}/{filename}']
-                    output_string = f'{str(distance)}_{str(angle)}_{random_string()}'
-                    output_card_path = f'{output_image_directory}/{output_string}.jpg'
-                    annotation_path = f'{annotations_directory}/{output_string}.txt'
-                    generate_image(input_card_paths, background, output_card_path, annotation_path, max_angle - angle, distance)
+                    output_string = f'{random_string()}'
+                    output_card_path = f'{modified_image_output_directory}/{output_string}.jpg'
+                    annotation_path = f'{modified_annotations_output_directory}/{output_string}.txt'
+                    generate_image(input_card_paths, background, output_card_path, annotation_path, True, 90 - angle, distance)
                     generated += 1
                     print(f'\rCompletion: {100 * (generated / (((max_angle-min_angle + angle_step)/angle_step)*((max_distance-min_distance + distance_step)/distance_step)*len(cards))):.2f}%', end='')
 
-def generate_dataset(num_images_per_card):
+def generate_dataset(dataset, num_images_per_card):
     cards_directory = 'combined_decks'
     backgrounds_directory = 'backgrounds'
-    output_image_directory = '../../../../Desktop/datasets/cards_3/images/val'
-    annotations_directory = '../../../../Desktop/datasets/cards_3/labels/val'
+    output_image_directory = os.getenv('DATASETS_ROOT') + '/' + os.getenv('DATASET_PATH') + '/images' + f'/{dataset}'
+    annotations_directory = os.getenv('DATASETS_ROOT') + '/' + os.getenv('DATASET_PATH') + '/labels' + f'/{dataset}'
+
+    num_images_per_card = int(os.getenv('IMAGES_PER_CARD'))
 
     make_directory(output_image_directory)
     make_directory(annotations_directory)
@@ -452,4 +466,15 @@ def generate_dataset(num_images_per_card):
                 generated += 1
                 print(f'\rCompletion: {100 * (generated / (num_images_per_card*len(cards))):.2f}%', end='')
 
-generate_test_data()
+parser = argparse.ArgumentParser(description='Dataset generation')
+parser.add_argument('--dataset', type=str, help='If should generate test data vs training data')
+args = parser.parse_args()
+
+if args.dataset == "test":
+    generate_test_data()
+elif args.dataset == "train":
+    generate_dataset(args.dataset, int(os.getenv('IMAGES_PER_CARD')))
+elif args.dataset == "val":
+    generate_dataset(args.dataset, max(int(int(os.getenv('IMAGES_PER_CARD')) / 4), 1))
+else:
+    raise Exception("Invalid dataset parameter. Please use train, test, or val")
